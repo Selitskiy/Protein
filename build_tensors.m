@@ -1,4 +1,4 @@
-function [trMX, trMY] = build_tensors(action, dataIdxDir, dataTrIdxFile, m_in,...
+function [trMX, trMY] = build_tensors(dataIdxDir, dataTrIdxFile, m_in,...
     resWindowLen, resWindowWhole, resNum, baseWindowLen, baseWindowWhole, baseNum, scaleNo )
 
 dataTrIdxFN = strcat(dataIdxDir,'/',dataTrIdxFile);
@@ -18,7 +18,7 @@ for i = 1:n
     %
     mAll = mAll + m;
 
-    fprintf('Counting %s+ dat: %d/%d\n', action, i, n)
+    fprintf('Counting %s+ dat: %d/%d\n', dataTrIdxFile, i, n)
 end
 
 
@@ -65,7 +65,7 @@ for i = 1:n
 
 
 
-    fprintf('Loading %s+ dat: %d/%d\n', action, i, n)
+    fprintf('Loading %s+ dat: %d/%d\n', dataTrIdxFile, i, n)
 end
 
 
@@ -141,7 +141,7 @@ for i = 1:n
 
     end
 
-    fprintf('Counting %s- dat: %d/%d\n', action, i, n)
+    fprintf('Counting %s- dat: %d/%d\n', dataTrIdxFile, i, n)
 end
 
 trNoBindM = zeros([mNone, m_in]);
@@ -227,7 +227,7 @@ for i = 1:n
 
     end
 
-    fprintf('Loading tr- dat: %d/%d\n', i, n)
+    fprintf('Loading %s- dat: %d/%d\n', dataTrIdxFile,i, n)
 end
 
 trNoBindBalM = trNoBindM(randperm(mCur, mAll*scaleNo), :);
