@@ -1,4 +1,4 @@
-function [trMX, trMY] = build_tensors(dataIdxDir, dataTrIdxFile, m_in,...
+function [trMX, trMY, mAll, mAllNo] = build_tensors(dataIdxDir, dataTrIdxFile, m_in, ...
     resWindowLen, resWindowWhole, resNum, baseWindowLen, baseWindowWhole, baseNum, scaleNo )
 
 dataTrIdxFN = strcat(dataIdxDir,'/',dataTrIdxFile);
@@ -230,13 +230,14 @@ for i = 1:n
     fprintf('Loading %s- dat: %d/%d\n', dataTrIdxFile,i, n)
 end
 
-trNoBindBalM = trNoBindM(randperm(mCur, mAll*scaleNo), :);
+mAllNo = mAll*scaleNo;
+trNoBindBalM = trNoBindM(randperm(mCur, mAllNo), :);
 clear("trNoBindM");
 
-trNoBindY = categorical(zeros([mAll*scaleNo, 1]));
+trNoBindY = categorical(zeros([mAllNo, 1]));
 
 %%
-mWhole = mAll*(scaleNo+1);
+mWhole = mAll + mAllNo;
 trMX = zeros([mWhole, m_in]);
 trMX(1:mAll,:) = trBindM;
 trMX(mAll+1:end,:) = trNoBindBalM;
