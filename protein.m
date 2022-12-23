@@ -42,6 +42,41 @@ max_epoch = 50; %200
     baseWindowLen, baseWindowWhole, baseNum, scaleNo);
 
 %%
+Xstr = repmat( string(repmat(' ', [1 resWindowWhole + resWindowWhole])), [mTrBind+mTrNoBind 1] );
+for i = 1:mTrBind+mTrNoBind
+    for j = 1:resWindowWhole
+        for k = 1:resNum
+            enc = X(i, (j-1)*resNum+k);
+            if enc
+                Xstr{i}(j) = char(k + 64);
+                break;
+            end
+        end
+    end
+
+     for j = 1:baseWindowWhole
+        for k = 1:baseNum
+            enc = X(i, mr_in+(j-1)*baseNum+k);
+            if enc
+                if k == 1
+                    Xstr{i}(resWindowWhole+j) = 'A';
+                elseif k == 2
+                    Xstr{i}(resWindowWhole+j) = 'C';
+                elseif k == 3
+                    Xstr{i}(resWindowWhole+j) = 'G';
+                else
+                    Xstr{i}(resWindowWhole+j) = 'U';
+                end
+                break;
+            end
+        end
+    end   
+    fprintf('Xstr(%d)=%s\n', i, Xstr(i));
+end
+[XstrS, I] = sort(Xstr);
+XstrU = unique(XstrS);
+
+%%
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
 cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = SigClasNet2D(m_in, n_out, ini_rate, max_epoch);
