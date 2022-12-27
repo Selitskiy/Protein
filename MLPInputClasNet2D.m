@@ -29,7 +29,7 @@ classdef MLPInputClasNet2D
         end
 
 
-        function [X2, Y2] = Predict(net, X2)
+        function [X2, Y2, predictedScores] = Predict(net, X2)
             predictedScores = predict(net.trainedNet, X2);
             predictedClasses = classify(net.trainedNet, X2);
             Y2 = predictedClasses;

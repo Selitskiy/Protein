@@ -12,12 +12,12 @@ clear all; close all; clc;
 %% General config
 
 % Amino residue frame one-side length
-resWindowLen = 5;
+resWindowLen = 7;
 resWindowWhole = 2*resWindowLen + 1;
 resNum = 26;
 
 % RNA base frame one-side length
-baseWindowLen = 5;
+baseWindowLen = 7;
 baseWindowWhole = 2*baseWindowLen + 1;
 baseNum = 4;
 
@@ -27,56 +27,23 @@ m_in = mr_in + mb_in;
 
 n_out = 2; % bind or not
 
-scaleNo = 1;
+scaleNo = 1;%50;
+scaleInFiles = 1;%2;
 
 % Load tarin data
 dataIdxDir = '~/data/Protein/practip-data';
 dataTrIdxFile = 'train.lst';
 
 
+%%
+%[X, Y, mTrBind, mTrNoBind, Xcontr, Ycontr, Ncontr] = build_tensors(dataIdxDir, dataTrIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
+%    baseWindowLen, baseWindowWhole, baseNum, scaleNo, scaleInFiles);
+
+
+%%
 ini_rate = 0.001; 
-max_epoch = 50; %200
+max_epoch = 10; %200
 
-%%
-[X, Y, mTrBind, mTrNoBind] = build_tensors(dataIdxDir, dataTrIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
-    baseWindowLen, baseWindowWhole, baseNum, scaleNo);
-
-%%
-Xstr = repmat( string(repmat(' ', [1 resWindowWhole + resWindowWhole])), [mTrBind+mTrNoBind 1] );
-for i = 1:mTrBind+mTrNoBind
-    for j = 1:resWindowWhole
-        for k = 1:resNum
-            enc = X(i, (j-1)*resNum+k);
-            if enc
-                Xstr{i}(j) = char(k + 64);
-                break;
-            end
-        end
-    end
-
-     for j = 1:baseWindowWhole
-        for k = 1:baseNum
-            enc = X(i, mr_in+(j-1)*baseNum+k);
-            if enc
-                if k == 1
-                    Xstr{i}(resWindowWhole+j) = 'A';
-                elseif k == 2
-                    Xstr{i}(resWindowWhole+j) = 'C';
-                elseif k == 3
-                    Xstr{i}(resWindowWhole+j) = 'G';
-                else
-                    Xstr{i}(resWindowWhole+j) = 'U';
-                end
-                break;
-            end
-        end
-    end   
-    fprintf('Xstr(%d)=%s\n', i, Xstr(i));
-end
-[XstrS, I] = sort(Xstr);
-XstrU = unique(XstrS);
-
-%%
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
 cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = SigClasNet2D(m_in, n_out, ini_rate, max_epoch);
@@ -85,46 +52,64 @@ cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = TransClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = KgClasNet2D(m_in, n_out, ini_rate, max_epoch);
 
-[mWhole, ~] = size(X);
-cNet.mb_size = 2^floor(log2(mWhole)-4);
 
-cNet = cNet.Create();
+nTrain = 10;
+[cNet, X, Y, mTrBind, mTrNoBind, Xcontr, Ycontr, Ncontr, t1, t2] = train_tensors(cNet, nTrain, dataIdxDir, dataTrIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
+    baseWindowLen, baseWindowWhole, baseNum, scaleNo, scaleInFiles);
 
-gpuDevice(1);
-reset(gpuDevice(1));
+%[mWhole, ~] = size(X);
+%cNet.mb_size = 2^floor(log2(mWhole)-4);
+%cNet = cNet.Create();
 
-t1 = clock();
-cNet = cNet.Train(X, Y);
-t2 = clock();
+% GPU on
+%gpuDevice(1);
+%reset(gpuDevice(1));
 
-%
+%t1 = clock();
+%cNet = cNet.Train(X, Y);
+%t2 = clock();
+
+% GPU off
+%delete(gcp('nocreate'));
+%gpuDevice([]);
+
+%%
 dataTsIdxFile = 'test.lst';
+scaleNoTs = 1;
 
-[X2, Yh2, mTsBind, mTsNoBind] = build_tensors(dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
-    baseWindowLen, baseWindowWhole, baseNum, scaleNo);
+% GPU on
+%gpuDevice(1);
+%reset(gpuDevice(1));
+
+%[X2, Yh2, mTsBind, mTsNoBind, X2contr, Y2contr, N2contr] = build_tensors(dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
+%    baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1);
+%[X2, Y2] = cNet.Predict(X2);
 
 %
-[X2, Y2] = cNet.Predict(X2);
+[TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNet, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
+    baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, 0.96);
 
-delete(gcp('nocreate'));
-
+% GPU off
+%delete(gcp('nocreate'));
+%gpuDevice([]);
 
 %
-[nY2, ~] = size(Y2);
-acc = sum(Yh2 == Y2) / nY2;
+%[nY2, ~] = size(Y2);
+%acc = sum(Yh2 == Y2) / nY2;
 
-TP = sum(Yh2(1:mTsBind) == Y2(1:mTsBind));
-TN = sum(Yh2(mTsBind+1:end) == Y2(mTsBind+1:end));
-FN = sum(Yh2(1:mTsBind) ~= Y2(1:mTsBind));
-FP = sum(Yh2(mTsBind+1:end) ~= Y2(mTsBind+1:end));
+%TP = sum(Yh2(1:mTsBind) == Y2(1:mTsBind));
+%TN = sum(Yh2(mTsBind+1:end) == Y2(mTsBind+1:end));
+%FN = sum(Yh2(1:mTsBind) ~= Y2(1:mTsBind));
+%FP = sum(Yh2(mTsBind+1:end) ~= Y2(mTsBind+1:end));
 
+acc = (TP + TN) / (TP + TN + FP + FN);
 Pr = TP / (TP + FP);
 Rec = TP / (TP + FN);
 Sp = TN / (TN + FP);
 F1 = 2*Rec*Pr/(Rec+Pr);
 
 %
-fprintf('Model %s, mb_size %d, max_epoch %d, ResWindow %d, BaseWindow %d, NoBindRat %d, TrainBindN %d, TrainNoBindN %d, TrstBindN %d, TestNoBindN %d\n',...
-    cNet.name, cNet.mb_size, max_epoch, resWindowWhole, baseWindowWhole, scaleNo, mTrBind, mTrNoBind, mTsBind, mTsNoBind);
+fprintf('Model %s, mb_size %d, max_epoch %d, ResWindow %d, BaseWindow %d, NoBindRat %d, TrainBindN %d, TrainNoBindN %d, NoBindTsRat %d, TestBindN %d, TestNoBindN %d\n',...
+    cNet.name, cNet.mb_size, max_epoch, resWindowWhole, baseWindowWhole, scaleNo, mTrBind, mTrNoBind, scaleNoTs, mTsBind, mTsNoBind);
 fprintf('Accuracy %f, Precision %f, Recall %f, Specificity %f, F1 %f, TP %d, TN %d, FN %d, FP %d, TrTime %f s\n',...
     acc, Pr, Rec, Sp, F1, TP, TN, FN, FP, etime(t2, t1));
