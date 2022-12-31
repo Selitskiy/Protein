@@ -27,8 +27,12 @@ m_in = mr_in + mb_in;
 
 n_out = 2; % bind or not
 
-scaleNo = 1;%50;
+bindScaleNo = 1;
+noBindScaleNo = 1;%50;
+
 scaleInFiles = 1;%2;
+
+noBindPerc = 70; %70;
 
 % Load tarin data
 dataIdxDir = '~/data/Protein/practip-data';
@@ -53,9 +57,10 @@ cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = KgClasNet2D(m_in, n_out, ini_rate, max_epoch);
 
 
-nTrain = 10;
-[cNet, X, Y, mTrBind, mTrNoBind, Xcontr, Ycontr, Ncontr, t1, t2] = train_tensors(cNet, nTrain, dataIdxDir, dataTrIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
-    baseWindowLen, baseWindowWhole, baseNum, scaleNo, scaleInFiles);
+nTrain = 5; %25
+nNets = 5;
+[cNet, cNets, X, Y, mTrBind, mTrNoBind, Xcontr, Ycontr, Ncontr, t1, t2, noBindThresh] = train_tensors(cNet, nNets, nTrain, dataIdxDir, dataTrIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
+    baseWindowLen, baseWindowWhole, baseNum, bindScaleNo, noBindScaleNo, scaleInFiles, noBindPerc);
 
 %[mWhole, ~] = size(X);
 %cNet.mb_size = 2^floor(log2(mWhole)-4);
@@ -75,7 +80,7 @@ nTrain = 10;
 
 %%
 dataTsIdxFile = 'test.lst';
-scaleNoTs = 1;
+scaleNoTs = 0;
 
 % GPU on
 %gpuDevice(1);
@@ -86,8 +91,8 @@ scaleNoTs = 1;
 %[X2, Y2] = cNet.Predict(X2);
 
 %
-[TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNet, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
-    baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, 0.96);
+[TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNet, cNets, nNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
+    baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThresh);
 
 % GPU off
 %delete(gcp('nocreate'));
@@ -109,7 +114,9 @@ Sp = TN / (TN + FP);
 F1 = 2*Rec*Pr/(Rec+Pr);
 
 %
-fprintf('Model %s, mb_size %d, max_epoch %d, ResWindow %d, BaseWindow %d, NoBindRat %d, TrainBindN %d, TrainNoBindN %d, NoBindTsRat %d, TestBindN %d, TestNoBindN %d\n',...
-    cNet.name, cNet.mb_size, max_epoch, resWindowWhole, baseWindowWhole, scaleNo, mTrBind, mTrNoBind, scaleNoTs, mTsBind, mTsNoBind);
+fprintf('Model %s, mb_size %d, max_epoch %d, ResWindow %d, BaseWindow %d, NoBindRat %d, TrainBindN %d, TrainNoBindN %d, BindScaleNo %d, NoBindScaleNo %d, ScaleInFiles %d\n',...
+    cNet.name, cNet.mb_size, max_epoch, resWindowWhole, baseWindowWhole, noBindScaleNo, mTrBind, mTrNoBind, bindScaleNo, noBindScaleNo, scaleInFiles);
+fprintf('NNets %d, NTrain %d, NoBindPerc %d, NoBindThresh %f, NoBindTsRat %d, TestBindN %d, TestNoBindN %d\n',...
+    nNets, nTrain, noBindPerc, noBindThresh, scaleNoTs, mTsBind, mTsNoBind);
 fprintf('Accuracy %f, Precision %f, Recall %f, Specificity %f, F1 %f, TP %d, TN %d, FN %d, FP %d, TrTime %f s\n',...
     acc, Pr, Rec, Sp, F1, TP, TN, FN, FP, etime(t2, t1));

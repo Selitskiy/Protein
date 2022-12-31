@@ -1,5 +1,5 @@
-function [cNet, trMX, trMY, mAll, mAllNo, Xcontr, Ycontr, Ncontr, t1, t2] = train_tensors(cNet, nTrain, dataIdxDir, dataTrIdxFile, m_in, ...
-    resWindowLen, resWindowWhole, resNum, baseWindowLen, baseWindowWhole, baseNum, scaleNo, scaleInFiles)
+function [cNet, cNets, trMX, trMY, mAll, mAllNo, Xcontr, Ycontr, Ncontr, t1, t2, noBindThresh] = train_tensors(cNet, nNets, nTrain, dataIdxDir, dataTrIdxFile, m_in, ...
+    resWindowLen, resWindowWhole, resNum, baseWindowLen, baseWindowWhole, baseNum, bindScaleNo, noBindScaleNo, scaleInFiles, noBindPerc)
 
 dataTrIdxFN = strcat(dataIdxDir,'/',dataTrIdxFile);
 
@@ -228,49 +228,87 @@ for i = 1:ns
     fprintf('Loading %s- dat: %d/%d\n', dataTrIdxFile,i, n)
 end
 
-if scaleNo
-    mAllNo = mAll*scaleNo;
+if noBindScaleNo
+    mAllNo = floor(mAll*noBindScaleNo);
 else
     mAllNo = mCur;
 end
 
+if bindScaleNo
+    mAllYes = floor(mAll*bindScaleNo);
+else
+    mAllYes = mAll;
+end
 
-%%
-mWhole = mAll + mAllNo;
+%% Repeated retraining with new no-bind folds
+cNets = cell([nNets, 1]);
+mWhole = mAllYes + mAllNo;
 cNet.mb_size = 2^floor(log2(mWhole)-4);
-cNet = cNet.Create();
+
+% Save only necessary slice of the non-bind data to save space
+trNoBindLimM = trNoBindM(randperm(mCur, mAllNo*(nTrain+1)), :);
+clear("trNoBindM");
 
 t1 = clock();
-for k = 1:nTrain
-    trNoBindBalM = trNoBindM(randperm(mCur, mAllNo), :);
-    trNoBindY = categorical(zeros([mAllNo, 1]));
+for l = 1:nNets
 
-    %
-    mWhole = mAll + mAllNo;
+    cNet = cNet.Create();
+    
     trMX = zeros([mWhole, m_in]);
-    trMX(1:mAll,:) = trBindM;
-    trMX(mAll+1:end,:) = trNoBindBalM;
-
     trMY = categorical(zeros([mWhole, 1]));
-    trMY(1:mAll,:) = trBindY;
-    trMY(mAll+1:end,:) = trNoBindY;
+
+    for k = 1:bindScaleNo
+        trMX(1+(k-1)*mAll:k*mAll,:) = trBindM;
+        trMY(1+(k-1)*mAll:k*mAll,:) = trBindY;
+    end
 
 
+    for k = 1:nTrain
+        trNoBindBalM = trNoBindLimM(1+(k-1)*mAllNo:k*mAllNo, :);
+        trNoBindY = categorical(zeros([mAllNo, 1]));
+
+        %
+        trMX(mAllYes+1:end,:) = trNoBindBalM;
+        trMY(mAllYes+1:end,:) = trNoBindY;
+
+
+        % GPU on
+        gpuDevice(1);
+        reset(gpuDevice(1));
+
+        cNet = cNet.Train(trMX, trMY);
+        cNets{l} = cNet;
+
+        % GPU off
+        delete(gcp('nocreate'));
+        gpuDevice([]);
+    end
+end
+t2 = clock();
+
+
+%% Find threshold for given percentle of FP no-bind predictions
+noBindThresh = 0;
+if noBindPerc
+    noBindX = trNoBindLimM(mAllNo*nTrain+1:end, :);
     % GPU on
     gpuDevice(1);
     reset(gpuDevice(1));
 
-    cNet = cNet.Train(trMX, trMY);
-
+    [noBindX, noBindY, noBindA] = cNet.Predict(noBindX);
+    
     % GPU off
     delete(gcp('nocreate'));
     gpuDevice([]);
-end
-t2 = clock();
 
-clear("trNoBindM");
+    noBindThresh = prctile(noBindA((noBindY == categorical(1)), 2), noBindPerc);
+end
+
 %% Convert input into strings (for sorting, uniqueness and contradiction detection)
-[Xcontr, Ycontr, Ncontr] = find_doubles(trMX, trMY, mAll, mAllNo, resWindowWhole, resNum, baseWindowLen, baseWindowWhole, baseNum);
+Xcontr = []; 
+Ycontr = []; 
+Ncontr = 0;
+%[Xcontr, Ycontr, Ncontr] = find_doubles(trMX, trMY, mAll, mAllNo, resWindowWhole, resNum, baseWindowLen, baseWindowWhole, baseNum);
 
 
 end
