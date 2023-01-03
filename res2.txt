@@ -47,3 +47,7 @@ Accuracy 0.995305, Precision 0.426162, Recall 0.976131, Specificity 0.995372, F1
 Model relu2dc, mb_size 16384, max_epoch 10, ResWindow 15, BaseWindow 15, NoBindRat 1, TrainBindN 196862, TrainNoBindN 196862, BindScaleNo 1, NoBindScaleNo 1, ScaleInFiles 1
 NNets 5, NTrain 5, NoBindPerc 70, NoBindThresh 0.926154, NoBindTsRat 0, TestBindN 3647, TestNoBindN 919837
 Accuracy 0.996829, Precision 0.530623, Recall 0.968288, Specificity 0.996931, F1 0.685559, TP 3145, TN 903776, FN 103, FP 2782, TrTime 473.782942 s
+
+Model1 relu2dc, mb_size , max_epoch 10, ResWindow 10, BaseWindow 30, NoBindRat 15, TrainBindN 15, TrainNoBindN 1, BindScaleNo 196862, NoBindScaleNo 196862, ScaleInFiles 1
+NNetTypes 2, NNets 3, NTrain 5, NoBindPerc 70, NoBindThresh1 0.916993, NoBindThresh2 0.925723, NoBindThresh3 0.919739, NoBindTsRat 0, TestBindN 3647, TestNoBindN 919837
+Accuracy 0.996791, Precision 0.524390, Recall 0.980938, Specificity 0.996847, F1 0.683431, TP 3139, TN 900200, FN 61, FP 2847, TrTime 1259.974271 s

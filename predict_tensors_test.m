@@ -1,4 +1,4 @@
-function [TP, TN, FP, FN, mBind, mNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNet, cNets, nNets, dataIdxDir, dataTrIdxFile, m_in, ...
+function [TP, TN, FP, FN, mBind, mNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNets, dataIdxDir, dataTrIdxFile, m_in, ...
     resWindowLen, resWindowWhole, resNum, baseWindowLen, baseWindowWhole, baseNum, scaleNo, scaleInFiles, threshP)
 
 dataTrIdxFN = strcat(dataIdxDir,'/',dataTrIdxFile);
@@ -69,13 +69,17 @@ end
 TPIdxCond = ones([mBind, 1]);
 FNIdxCond = ones([mBind, 1]);
 
+[nNets, ~] = size(cNets);
+
 for l = 1:nNets
+    fprintf('Predicting bind Net %d\n', l);
+
     % GPU on
     gpuDevice(1);
     reset(gpuDevice(1));
 
     cNet = cNets{l};
-    [bindX, bindY, bindA] = cNet.Predict(bindX);
+    [~, bindY, bindA] = cNet.Predict(bindX);
 
     % GPU off
     delete(gcp('nocreate'));
@@ -94,8 +98,8 @@ for l = 1:nNets
     sigActFN = std(bindA(FNIdx,1));
 
 
-    TPIdxCond = TPIdxCond & ((bindYh == bindY) & (bindA(:,2) > threshP));
-    FNIdxCond = FNIdxCond & ((bindYh ~= bindY) | ((bindYh == bindY) & (bindA(:,2) <= threshP)));
+    TPIdxCond = TPIdxCond & ((bindYh == bindY) & (bindA(:,2) > threshP(l)));
+    FNIdxCond = FNIdxCond & ((bindYh ~= bindY) | ((bindYh == bindY) & (bindA(:,2) <= threshP(l))));
 
 end
 
@@ -261,6 +265,7 @@ for i = 1:ns
         FPIdxCond = ones([mCur, 1]);
 
         for l = 1:nNets
+            fprintf('Predicting no-bind Net %d\n', l);
 
             % GPU on
             gpuDevice(1);
@@ -297,11 +302,11 @@ for i = 1:ns
             nFPold = nFP;
             sumActFPold = sumActFP;
 
-            TNIdxCond = TNIdxCond & ((noBindYh(1:mCur) == noBindY(1:mCur)) | ((noBindYh(1:mCur) ~= noBindY(1:mCur)) & (noBindA(1:mCur,2) <= threshP)));
-            FPIdxCond = FPIdxCond & ((noBindYh(1:mCur) ~= noBindY(1:mCur)) & (noBindA(1:mCur,2) > threshP));
+            TNIdxCond = TNIdxCond & ((noBindYh(1:mCur) == noBindY(1:mCur)) | ((noBindYh(1:mCur) ~= noBindY(1:mCur)) & (noBindA(1:mCur,2) <= threshP(l)) ));
+            FPIdxCond = FPIdxCond & ((noBindYh(1:mCur) ~= noBindY(1:mCur)) & (noBindA(1:mCur,2) > threshP(l)) );
         end
 
-        if threshP > 0 
+        if threshP(l) > 0 
             TN = TN + sum(TNIdxCond);
             FP = FP + sum(FPIdxCond);
         else
@@ -319,57 +324,6 @@ end
 
     if scaleNo
         % Save only necessary slice of the non-bind data
-        mNoBind = mBind * scaleNo;
-        noBindX = noBindX(randperm(mNone, mNoBind), :);
-        noBindYh = categorical(zeros([mNoBind, 1]));
-
-    % GPU on
-    gpuDevice(1);
-    reset(gpuDevice(1));
-
-    [~, noBindY, noBindA] = cNet.Predict(noBindX);
-    
-    % GPU off
-    delete(gcp('nocreate'));
-    gpuDevice([]);
-
-
-    TNIdx = (noBindYh(1:mCur) == noBindY(1:mCur));
-    FPIdx = (noBindYh(1:mCur) ~= noBindY(1:mCur));
-
-    nTNcur = sum(TNIdx);
-    sumActTNcur = sum(noBindA(TNIdx,1));
-
-    nFPcur = sum(FPIdx);
-    sumActFPcur = sum(noBindA(FPIdx,2));
-
-    nTN = nTNold + nTNcur;
-    sumActTN = (sumActTNold + sumActTNcur);
-    meanActTN = sumActTN / nTN;
-
-    nFP = nFPold + nFPcur;
-    sumActFP = (sumActFPold + sumActFPcur);
-    meanActFP = sumActFP / nFP;
-
-
-    nTNold = nTN;
-    sumActTNold = sumActTN;
-    nFPold = nFP;
-    sumActFPold = sumActFP;
-
-
-    if threshP > 0 
-        TNIdxCond = ((noBindYh(1:mCur) == noBindY(1:mCur)) | ((noBindYh(1:mCur) ~= noBindY(1:mCur)) & (noBindA(1:mCur,2) <= threshP)));
-        FPIdxCond = ((noBindYh(1:mCur) ~= noBindY(1:mCur)) & (noBindA(1:mCur,2) > threshP));
-        TN = TN + sum(TNIdxCond);
-        FP = FP + sum(FPIdxCond);
-    else
-        TN = TN + sum(TNIdx);
-        FP = FP + sum(FPIdx);
-    end
-
-    TP = TP + 0;
-    FN = FN + 0;
 
     end
 
