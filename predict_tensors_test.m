@@ -18,7 +18,7 @@ for i = 1:n
     %
     mBind = mBind + m;
 
-    fprintf('Counting %s+ dat: %d/%d\n', dataTrIdxFile, i, n)
+    fprintf('Counting %s+ dat: %d/%d\n', dataTrIdxFile, i, n);
 end
 
 
@@ -62,7 +62,7 @@ for i = 1:n
     end
 
 
-    fprintf('Loading %s+ dat: %d/%d\n', dataTrIdxFile, i, n)
+    fprintf('Loading %s+ dat: %d/%d\n', dataTrIdxFile, i, n);
 end
 
 
@@ -190,7 +190,7 @@ for i = 1:ns
 
     end
 
-    fprintf('Loading %s- dat: %d/%d\n', dataTrIdxFile, i, n)
+    fprintf('Loading %s- dat: %d/%d\n', dataTrIdxFile, i, n);
 
 
     noBindX = zeros([mNone, m_in]);

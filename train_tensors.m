@@ -18,7 +18,7 @@ for i = 1:n
     %
     mAll = mAll + m;
 
-    fprintf('Counting %s+ dat: %d/%d\n', dataTrIdxFile, i, n)
+    fprintf('Counting %s+ dat: %d/%d\n', dataTrIdxFile, i, n);
 end
 
 
@@ -62,7 +62,7 @@ for i = 1:n
     end
 
 
-    fprintf('Loading %s+ dat: %d/%d\n', dataTrIdxFile, i, n)
+    fprintf('Loading %s+ dat: %d/%d\n', dataTrIdxFile, i, n);
 end
 
 
@@ -139,7 +139,7 @@ for i = 1:ns
 
     end
 
-    fprintf('Counting %s- dat: %d/%d\n', dataTrIdxFile, i, n)
+    fprintf('Counting %s- dat: %d/%d\n', dataTrIdxFile, i, n);
 end
 
 trNoBindM = zeros([mNone, m_in]);
@@ -225,7 +225,7 @@ for i = 1:ns
 
     end
 
-    fprintf('Loading %s- dat: %d/%d\n', dataTrIdxFile,i, n)
+    fprintf('Loading %s- dat: %d/%d\n', dataTrIdxFile,i, n);
 end
 
 if noBindScaleNo
@@ -250,6 +250,10 @@ trNoBindLimM = trNoBindM(randperm(mCur, mAllNo*(nTrain+1)), :);
 clear("trNoBindM");
 
 noBindThresh = zeros([nNets*nNetTypes, 1]);
+            
+% GPU on
+gpuDevice(1);
+reset(gpuDevice(1));
 
 t1 = clock();
 for j = 1:nNetTypes
@@ -282,10 +286,11 @@ for j = 1:nNetTypes
             trMX(mAllYes+1:end,:) = trNoBindBalM;
             trMY(mAllYes+1:end,:) = trNoBindY;
 
+            fprintf('Training Net type %d, Net instance %d, Train fold %d\n', j, l, k);
 
             % GPU on
-            gpuDevice(1);
-            reset(gpuDevice(1));
+            %gpuDevice(1);
+            %reset(gpuDevice(1));
 
             % Updates weights from previous training with previous slice of
             % no-bind data
@@ -293,8 +298,8 @@ for j = 1:nNetTypes
             cNets{(j-1)*nNets + l} = cNet;
 
             % GPU off
-            delete(gcp('nocreate'));
-            gpuDevice([]);
+            %delete(gcp('nocreate'));
+            %gpuDevice([]);
         end
 
 
@@ -302,16 +307,18 @@ for j = 1:nNetTypes
         %% Find threshold for given percentle of FP no-bind predictions
 
         if noBindPerc
+            fprintf('Predicting no-bind destribition Net type %d, Net instance %d, Train fold %d\n', j, l, k);
+
             noBindX = trNoBindLimM(mAllNo*nTrain+1:end, :);
             % GPU on
-            gpuDevice(1);
-            reset(gpuDevice(1));
+            %gpuDevice(1);
+            %reset(gpuDevice(1));
 
             [~, noBindY, noBindA] = cNet.Predict(noBindX);
     
             % GPU off
-            delete(gcp('nocreate'));
-            gpuDevice([]);
+            %delete(gcp('nocreate'));
+            %gpuDevice([]);
 
             noBindThresh((j-1)*nNets + l) = prctile(noBindA((noBindY == categorical(1)), 2), noBindPerc);
         end
@@ -319,6 +326,10 @@ for j = 1:nNetTypes
     end
 end
 t2 = clock();
+            
+% GPU off
+delete(gcp('nocreate'));
+gpuDevice([]);
 
 %% Convert input into strings (for sorting, uniqueness and contradiction detection)
 Xcontr = []; 
