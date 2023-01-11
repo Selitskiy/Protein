@@ -28,13 +28,13 @@ m_in = mr_in + mb_in;
 n_out = 2; % bind or not
 
 bindScaleNo = 1;
-noBindScaleNo = 10;
+noBindScaleNo = 50;
 
-scaleInFiles = 1;%2;
+scaleInFiles = 2;%2;
 
-noBindPerc = 70; %70;
+noBindPerc = 0; %70;
 
-nTrain = 2; %25
+nTrain = 10; %25
 nNets = 1;
 
 
@@ -53,23 +53,23 @@ ini_rate = 0.001;
 max_epoch = [floor(30/nTrain), floor(30/nTrain), floor(90/nTrain)]; %200
 
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
-cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1));
+%cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1));
 %cNet = SigClasNet2D(m_in, n_out, ini_rate, max_epoch);
-%cNet = TanhClasNet2D(m_in, n_out, ini_rate, max_epoch);
+%cNet = TanhClasNet2D(m_in, n_out, ini_rate, max_epoch(3));
 %cNet = RbfClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = TransClasNet2D(m_in, n_out, ini_rate, max_epoch);
-%cNet = KgClasNet2D(m_in, n_out, ini_rate, max_epoch);
+cNet = KgClasNet2D(m_in, n_out, ini_rate, max_epoch(2));
 
-nNetTypes = 3;
+nNetTypes = 1;
 cNetTypes = cell([nNetTypes, 1]);
 
 cNetTypes{1} = cNet;
 
-cNet2 = KgClasNet2D(m_in, n_out, ini_rate, max_epoch(2));
-cNetTypes{2} = cNet2;
+%cNet2 = KgClasNet2D(m_in, n_out, ini_rate, max_epoch(2));
+%cNetTypes{2} = cNet2;
 
-cNet3 = TanhClasNet2D(m_in, n_out, ini_rate, max_epoch(3));
-cNetTypes{3} = cNet3;
+%cNet3 = TanhClasNet2D(m_in, n_out, ini_rate, max_epoch(3));
+%cNetTypes{3} = cNet3;
 
 
 [cNets, mTrBind, mTrNoBind, Xcontr, Ycontr, Ncontr, t1, t2, noBindThresh] = train_tensors(cNetTypes, nNets, nTrain, dataIdxDir, dataTrIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
@@ -102,11 +102,13 @@ F1 = 2*Rec*Pr/(Rec+Pr);
 %%
 model_name = "";
 for i = 1:nNetTypes
-    model_name = strcat(model_name, ".", cNet.name);
+    model_name = strcat(model_name, ".", cNetTypes{i}.name);
 end
 mb_size = cNets{1}.mb_size;
+
+[~, nEns] = size(max_epoch);
 max_epoch_str = "";
-for i = 1:nNetTypes*nNets
+for i = 1:nEns
     max_epoch_str = strcat(max_epoch_str, ".", string(max_epoch(i)));
 end
 

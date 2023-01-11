@@ -67,22 +67,25 @@ end
 
 
 %% Count all no-bind residue-base pairs
+offFolds = 0;
+for f = 1:scaleInFiles
+
 mNone = 0;
 ns = floor(n/scaleInFiles);
 for i = 1:ns
-    dataDatFile = trIdxM(i,5);
+    dataDatFile = trIdxM(offFolds+i, 5);
     dataDatFN = strcat(dataIdxDir,'/',dataDatFile);
     trDatM = readmatrix(dataDatFN, FileType='text', Delimiter=' ');
     [m, ~] = size(trDatM);
 
     %
-    resFaFile = trIdxM(i,1);
+    resFaFile = trIdxM(offFolds+i, 1);
     resFaFN = strcat(dataIdxDir,'/',resFaFile);
     resFaMstr = readmatrix(resFaFN, FileType='text', OutputType='string', Delimiter=' ');
     resFaM = double(char(resFaMstr(2))) - 64;
     [~, res_len] = size(resFaM);
 
-    baseFaFile = trIdxM(i,3);
+    baseFaFile = trIdxM(offFolds+i,3);
     baseFaFN = strcat(dataIdxDir,'/',baseFaFile);
     baseFaMstr = readmatrix(baseFaFN, FileType='text', OutputType='string', Delimiter=' ');
     baseFaM = double(char(baseFaMstr(2)));
@@ -139,7 +142,7 @@ for i = 1:ns
 
     end
 
-    fprintf('Counting %s- dat: %d/%d\n', dataTrIdxFile, i, n);
+    fprintf('Counting %s- dat: %d/%d fold%d\n', dataTrIdxFile, offFolds+i, n, f);
 end
 
 trNoBindM = zeros([mNone, m_in]);
@@ -147,19 +150,19 @@ trNoBindM = zeros([mNone, m_in]);
 %% Loading all no bind residue-base pairs
 mCur = 1;
 for i = 1:ns
-    dataDatFile = trIdxM(i,5);
+    dataDatFile = trIdxM(offFolds+i, 5);
     dataDatFN = strcat(dataIdxDir,'/',dataDatFile);
     trDatM = readmatrix(dataDatFN, FileType='text', Delimiter=' ');
     [m, ~] = size(trDatM);
 
     %
-    resFaFile = trIdxM(i,1);
+    resFaFile = trIdxM(offFolds+i, 1);
     resFaFN = strcat(dataIdxDir,'/',resFaFile);
     resFaMstr = readmatrix(resFaFN, FileType='text', OutputType='string', Delimiter=' ');
     resFaM = double(char(resFaMstr(2))) - 64;
     [~, res_len] = size(resFaM);
 
-    baseFaFile = trIdxM(i,3);
+    baseFaFile = trIdxM(offFolds+i, 3);
     baseFaFN = strcat(dataIdxDir,'/',baseFaFile);
     baseFaMstr = readmatrix(baseFaFN, FileType='text', OutputType='string', Delimiter=' ');
     baseFaM = double(char(baseFaMstr(2)));
@@ -225,7 +228,7 @@ for i = 1:ns
 
     end
 
-    fprintf('Loading %s- dat: %d/%d\n', dataTrIdxFile,i, n);
+    fprintf('Loading %s- dat: %d/%d fold %d\n', dataTrIdxFile, offFolds+i, n, f);
 end
 
 if noBindScaleNo
@@ -242,18 +245,44 @@ end
 
 %% Repeated retraining with new no-bind folds
 [nNetTypes, ~] = size(cNetTypes);
+
 cNets = cell([nNets*nNetTypes, 1]);
 mWhole = mAllYes + mAllNo;
 
+nTrainMax = floor((mCur-mAllYes)/mAllNo);
+if nTrain == 0
+    nTrain = nTrainMax;
+end
+
 % Save only necessary slice of the non-bind data to save space
-trNoBindLimM = trNoBindM(randperm(mCur, mAllNo*(nTrain+1)), :);
+for i = 1:nTrain
+    dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.', string(mAllNo), '.', string((f-1)*nTrain + i), '.mat');
+
+    if ~isfile(dataTrNoBindFN)
+     %trNoBindBalM = trNoBindM(randperm(mCur, mAllNo), :);
+     trNoBindBalM = trNoBindM(randperm(mCur-mAllYes, mAllNo), :);
+     save(dataTrNoBindFN, 'trNoBindBalM');
+
+     fprintf('Saving %s- dat: %d fold %d\n', dataTrNoBindFN, i, f);
+    end
+end
+%trNoBindLimM = trNoBindM(randperm(mCur, mAllNo*nTrain), :);
+
+%trNoBindThreshM = trNoBindM(randperm(mCur, mAllYes), :);
+trNoBindThreshM = trNoBindM(end-mAllYes:end, :);
 clear("trNoBindM");
+clear("trNoBindBalM");
+
+offFolds = offFolds + ns;
+
+end %f
+
 
 noBindThresh = zeros([nNets*nNetTypes, 1]);
             
 % GPU on
-gpuDevice(1);
-reset(gpuDevice(1));
+%gpuDevice(1);
+%reset(gpuDevice(1));
 
 t1 = clock();
 for j = 1:nNetTypes
@@ -278,19 +307,24 @@ for j = 1:nNetTypes
         end
 
 
-        for k = 1:nTrain
-            trNoBindBalM = trNoBindLimM(1+(k-1)*mAllNo:k*mAllNo, :);
+        for k = 1:nTrain*scaleInFiles
+            %trNoBindBalM = trNoBindLimM(1+(k-1)*mAllNo:k*mAllNo, :);
+            dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.', string(mAllNo), '.', string(k), '.mat');
+            load(dataTrNoBindFN, 'trNoBindBalM');
+
             trNoBindY = categorical(zeros([mAllNo, 1]));
 
             %
             trMX(mAllYes+1:end,:) = trNoBindBalM;
             trMY(mAllYes+1:end,:) = trNoBindY;
 
+            clear("trNoBindBalM");
+
             fprintf('Training Net type %d, Net instance %d, Train fold %d\n', j, l, k);
 
             % GPU on
-            %gpuDevice(1);
-            %reset(gpuDevice(1));
+            gpuDevice(1);
+            reset(gpuDevice(1));
 
             % Updates weights from previous training with previous slice of
             % no-bind data
@@ -298,8 +332,8 @@ for j = 1:nNetTypes
             cNets{(j-1)*nNets + l} = cNet;
 
             % GPU off
-            %delete(gcp('nocreate'));
-            %gpuDevice([]);
+            delete(gcp('nocreate'));
+            gpuDevice([]);
         end
 
 
@@ -309,18 +343,21 @@ for j = 1:nNetTypes
         if noBindPerc
             fprintf('Predicting no-bind destribition Net type %d, Net instance %d, Train fold %d\n', j, l, k);
 
-            noBindX = trNoBindLimM(mAllNo*nTrain+1:end, :);
+            %noBindX = trNoBindLimM(mAllNo*nTrain+1:end, :);
+            
             % GPU on
-            %gpuDevice(1);
-            %reset(gpuDevice(1));
+            gpuDevice(1);
+            reset(gpuDevice(1));
 
-            [~, noBindY, noBindA] = cNet.Predict(noBindX);
+            [~, noBindY, noBindA] = cNet.Predict(trNoBindThreshM);
     
             % GPU off
-            %delete(gcp('nocreate'));
-            %gpuDevice([]);
+            delete(gcp('nocreate'));
+            gpuDevice([]);
 
             noBindThresh((j-1)*nNets + l) = prctile(noBindA((noBindY == categorical(1)), 2), noBindPerc);
+        else
+            noBindThresh((j-1)*nNets + l) = 0;
         end
 
     end
@@ -328,8 +365,8 @@ end
 t2 = clock();
             
 % GPU off
-delete(gcp('nocreate'));
-gpuDevice([]);
+%delete(gcp('nocreate'));
+%gpuDevice([]);
 
 %% Convert input into strings (for sorting, uniqueness and contradiction detection)
 Xcontr = []; 
