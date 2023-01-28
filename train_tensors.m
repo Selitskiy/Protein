@@ -256,7 +256,7 @@ end
 
 % Save only necessary slice of the non-bind data to save space
 for i = 1:nTrain
-    dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.', string(mAllNo), '.', string((f-1)*nTrain + i), '.mat');
+    dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllNo), '.', string((f-1)*nTrain + i), '.mat');
 
     if ~isfile(dataTrNoBindFN)
      %trNoBindBalM = trNoBindM(randperm(mCur, mAllNo), :);
@@ -309,7 +309,7 @@ for j = 1:nNetTypes
 
         for k = 1:nTrain*scaleInFiles
             %trNoBindBalM = trNoBindLimM(1+(k-1)*mAllNo:k*mAllNo, :);
-            dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.', string(mAllNo), '.', string(k), '.mat');
+            dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllNo), '.', string(k), '.mat');
             load(dataTrNoBindFN, 'trNoBindBalM');
 
             trNoBindY = categorical(zeros([mAllNo, 1]));
