@@ -66,6 +66,7 @@ for i = 1:n
 end
 
 [~, nThresh] = size(threshP);
+sumThresh = sum(threshP, "all");
 
 %TPIdx = ones([mBind, 1]);
 %FNIdx = ones([mBind, 1]);
@@ -103,8 +104,13 @@ for l = 1:nNets
     sigActFN = std(bindA(FNIdx,1));
 
     for ll = 1:nThresh
-        TPIdxCond(:,ll) = TPIdxCond(:,ll) & (bindA(:,2) >= threshP(l,ll));
-        
+
+        if sumThresh
+            TPIdxCond(:,ll) = TPIdxCond(:,ll) & (bindA(:,2) >= threshP(l,ll));
+        else
+            TPIdxCond(:,ll) = TPIdxCond(:,ll) & (bindYh == bindY);
+        end
+
         %TPIdxCond(:,ll) = TPIdxCond(:,ll) & ((bindYh == bindY) & (bindA(:,2) >= threshP(l,ll)));
         %TPIdxCond(:,ll) = TPIdxCond(:,ll) & ( ((bindYh == bindY) & (bindA(:,2) >= threshP(l,ll))) | ((bindYh ~= bindY) & (bindA(:,1) < threshP(l,ll))) );
     end
@@ -315,7 +321,12 @@ for i = 1:ns
             sumActFPold = sumActFP;
 
             for ll = 1:nThresh
-                FPIdxCond(:,ll) = FPIdxCond(:,ll) & (noBindA(1:mCur,2) >= threshP(l,ll));
+
+                if sumThresh
+                    FPIdxCond(:,ll) = FPIdxCond(:,ll) & (noBindA(1:mCur,2) >= threshP(l,ll));
+                else
+                    FPIdxCond(:,ll) = FPIdxCond(:,ll) & (noBindYh(1:mCur) ~= noBindY(1:mCur));
+                end
 
                 %TNIdxCond(:,ll) = TNIdxCond(:,ll) & (noBindA(1:mCur,1) >= threshP(l,ll));
                 %TNIdxCond(:,ll) = TNIdxCond(:,ll) & ((noBindYh(1:mCur) == noBindY(1:mCur)) & (noBindA(1:mCur,1) > threshP(l,ll)));

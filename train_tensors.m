@@ -1,4 +1,4 @@
-function [cNets, mAll, mAllNo, Xcontr, Ycontr, Ncontr, t1, t2, noBindThresh] = train_tensors(cNetTypes, nNets, nTrain, dataIdxDir, dataTrIdxFile, m_in, ...
+function [cNets, mAllYes, mAllNo, Xcontr, Ycontr, Ncontr, t1, t2, noBindThresh] = train_tensors(cNetTypes, nNets, nTrain, dataIdxDir, dataTrIdxFile, m_in, ...
     resWindowLen, resWindowWhole, resNum, baseWindowLen, baseWindowWhole, baseNum, bindScaleNo, noBindScaleNo, scaleInFiles, noBindPerc)
 
 dataTrIdxFN = strcat(dataIdxDir,'/',dataTrIdxFile);
@@ -256,7 +256,8 @@ end
 
 % Save only necessary slice of the non-bind data to save space
 for i = 1:nTrain
-    dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllNo), '.', string((f-1)*nTrain + i), '.mat');
+    dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.', string(resWindowLen), '.', string(baseWindowLen),...
+        '.', string(mAllNo), '.', string((f-1)*nTrain + i), '.mat');
 
     if ~isfile(dataTrNoBindFN)
      %trNoBindBalM = trNoBindM(randperm(mCur, mAllNo), :);
@@ -307,35 +308,52 @@ for j = 1:nNetTypes
         end
 
 
-        for k = 1:nTrain*scaleInFiles
-            %trNoBindBalM = trNoBindLimM(1+(k-1)*mAllNo:k*mAllNo, :);
-            dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllNo), '.', string(k), '.mat');
-            load(dataTrNoBindFN, 'trNoBindBalM');
+        %Saved name
+        cNetName = strcat(dataIdxDir,'/prot.', string(cNet.name), '.', string(cNet.mb_size), '.', string(cNet.max_epoch),...
+            '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), '.', string(mAllNo),...
+            '.', string(l), '.', string(nTrain), '.mat');
 
-            trNoBindY = categorical(zeros([mAllNo, 1]));
 
-            %
-            trMX(mAllYes+1:end,:) = trNoBindBalM;
-            trMY(mAllYes+1:end,:) = trNoBindY;
+        if ~isfile(cNetName)
 
-            clear("trNoBindBalM");
+            for k = 1:nTrain*scaleInFiles
+                %trNoBindBalM = trNoBindLimM(1+(k-1)*mAllNo:k*mAllNo, :);
+                dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.', string(resWindowLen), '.', string(baseWindowLen),...
+                    '.', string(mAllNo), '.', string(k), '.mat');
+                load(dataTrNoBindFN, 'trNoBindBalM');
 
-            fprintf('Training Net type %d, Net instance %d, Train fold %d\n', j, l, k);
+                trNoBindY = categorical(zeros([mAllNo, 1]));
 
-            % GPU on
-            gpuDevice(1);
-            reset(gpuDevice(1));
+                %
+                trMX(mAllYes+1:end,:) = trNoBindBalM;
+                trMY(mAllYes+1:end,:) = trNoBindY;
 
-            % Updates weights from previous training with previous slice of
-            % no-bind data
-            cNet = cNet.Train(trMX, trMY);
-            cNets{(j-1)*nNets + l} = cNet;
+                clear("trNoBindBalM");
 
-            % GPU off
-            delete(gcp('nocreate'));
-            gpuDevice([]);
+                fprintf('Training Net type %d, Net instance %d, Train fold %d\n', j, l, k);
+
+                % GPU on
+                gpuDevice(1);
+                reset(gpuDevice(1));
+
+                % Updates weights from previous training with previous slice of no-bind data
+                cNet = cNet.Train(trMX, trMY);
+                %cNets{(j-1)*nNets + l} = cNet;
+
+                % GPU off
+                delete(gcp('nocreate'));
+                gpuDevice([]);
+            end
+
+            save(cNetName, 'cNet');
+        
+        else
+
+            load(cNetName, 'cNet');
+            fprintf('Loading Net type %d, Net instance %d\n', j, l);
         end
 
+        cNets{(j-1)*nNets + l} = cNet;
 
 
         %% Find threshold for given percentle of FP no-bind predictions

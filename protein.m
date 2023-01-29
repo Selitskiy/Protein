@@ -32,7 +32,7 @@ noBindScaleNo = 50;
 
 scaleInFiles = 2;%2;
 
-noBindPerc = 0; %70;
+noBindPerc = 70; %70;
 
 nTrain = 10; %25
 nNets = 1;
@@ -84,44 +84,73 @@ dataTsIdxFile = 'test.lst';
 scaleNoTs = 0;
 
 %
-nStep = 31;
-ROCX = zeros([nStep, 1]);
-ROCY = zeros([nStep, 1]);
-ROCT = zeros([nStep, 1]);
+calcAUC = 1;
+AUC = 0;
 
-noBindThresh = zeros([nNets, nStep]);
-for l = 1:nNets
-    for i = 1:(nStep-1)
-        noBindThresh(l,i) = 1/nStep * (i-1);
+if calcAUC
+    nStep1 = 10;
+    nStep2 = 10;
+    nStep3 = 10;
+    nStep = nStep1 + nStep2 + nStep3 + 1;
+    ROCX = zeros([nStep, 1]);
+    ROCY = zeros([nStep, 1]);
+    ROCT = zeros([nStep, 1]);
+
+    noBindThreshAUC = zeros([nNets, nStep]);
+    for l = 1:nNets
+        for i = 1:nStep1
+            noBindThreshAUC(l,i) = 0.01/nStep1 * (i-1);
+        end
+
+        for i = nStep1+1:nStep1+nStep2
+            noBindThreshAUC(l,i) = 0.01 + (0.1-0.01)/nStep2 * (i-nStep1-1);
+        end
+
+        for i = nStep1+nStep2+1:nStep1+nStep2+nStep3
+            noBindThreshAUC(l,i) = 0.11 + (1-0.11)/nStep3 * (i-(nStep1+nStep2)-1);
+        end
+
+        noBindThreshAUC(l,nStep) = 1.001;
     end
-   noBindThresh(l,nStep) = 1.01;
+
+
+    [TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
+        baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThreshAUC);
+
+%%
+    for i = 1:nStep
+
+        acc = (TP(i) + TN(i)) / (TP(i) + TN(i) + FP(i) + FN(i));
+        Pr = TP(i) / (TP(i) + FP(i));
+        Rec = TP(i) / (TP(i) + FN(i));
+        Sp = TN(i) / (TN(i) + FP(i));
+        Fo = FP(i) / (FP(i) + TN(i));
+        F1 = 2*Rec*Pr/(Rec+Pr);
+
+        ROCX(i) = 1 - Sp;
+        ROCY(i) = Rec;
+        ROCT(i) = noBindThreshAUC(1,i);
+
+        if i>1
+            AUC = AUC + (ROCY(i-1) + ROCY(i)) * (ROCX(i-1) - ROCX(i))/2;
+        end
+
+    end
 end
 
+%%
+%noBindThresh = zeros([nNets, 1]);
 
 [TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
         baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThresh);
 
-
-for i = 1:nStep
-    %
-    %[TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
-    %    baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThresh);
-
-
-    acc = (TP(i) + TN(i)) / (TP(i) + TN(i) + FP(i) + FN(i));
-    Pr = TP(i) / (TP(i) + FP(i));
-    Rec = TP(i) / (TP(i) + FN(i));
-    Sp = TN(i) / (TN(i) + FP(i));
-    Fo = FP(i) / (FP(i) + TN(i));
-    F1 = 2*Rec*Pr/(Rec+Pr);
-
-    ROCX(i) = 1 - Sp;
-    ROCY(i) = Rec;
-    ROCT(i) = noBindThresh(1,i);
-
-end
-
-
+i=1;
+acc = (TP(i) + TN(i)) / (TP(i) + TN(i) + FP(i) + FN(i));
+Pr = TP(i) / (TP(i) + FP(i));
+Rec = TP(i) / (TP(i) + FN(i));
+Sp = TN(i) / (TN(i) + FP(i));
+Fo = FP(i) / (FP(i) + TN(i));
+F1 = 2*Rec*Pr/(Rec+Pr);
 
 %%
 model_name = "";
@@ -137,21 +166,25 @@ for i = 1:nEns
 end
 
 %%
-fprintf('Thresh SpecC Recall\n');
-for i = 1:nStep
-    fprintf('%f %f %f\n', ROCT(i), ROCX(i), ROCY(i));
+if calcAUC
+    fprintf('Thresh SpecC Recall\n');
+    for i = 1:nStep
+        fprintf('%f %f %f\n', ROCT(i), ROCX(i), ROCY(i));
+    end
+ 
+    f = figure();
+    lp = plot(ROCX, ROCY, 'LineStyle', '-', 'Color', 'b', 'MarkerSize', 1, 'LineWidth', 1);
+    hold on;
+    title(strcat("ROC ", model_name, ", mb=", string(mb_size), ", epoch=", max_epoch_str, ", resL=", num2str(resWindowLen), ", baseL=", num2str(baseWindowLen),...
+         ", trBindN=", string(mTrBind), ", trNoBindN=", string(mTrNoBind), ", trainN=", string(nTrain), ", netsN=", string(nNets)));
+    xlabel('FPR');
+    ylabel('TPR');
 end
- f = figure();
- lp = plot(ROCX, ROCY, 'LineStyle', '-', 'Color', 'b', 'MarkerSize', 1, 'LineWidth', 1);
- hold on;
- title(strcat("ROC ", model_name, ", resLen=", num2str(resWindowLen), ", baseLen=", num2str(baseWindowLen)));
- xlabel('FPR');
- ylabel('TPR');
 
 %%
-fprintf('Model %s mb_size %d, max_epoch %s ResWindow %d, BaseWindow %d, NoBindRat %d, TrainBindN %d, TrainNoBindN %d, BindScaleNo %d, NoBindScaleNo %d, ScaleInFiles %f\n',...
-    model_name, mb_size, max_epoch_str, resWindowWhole, baseWindowWhole, noBindScaleNo, mTrBind, mTrNoBind, bindScaleNo, noBindScaleNo, scaleInFiles);
+fprintf('Model %s mb_size %d, max_epoch %s ResWindow %d, BaseWindow %d, TrainBindN %d, TrainNoBindN %d, BindScaleNo %d, NoBindScaleNo %d, ScaleInFiles %f\n',...
+    model_name, mb_size, max_epoch_str, resWindowWhole, baseWindowWhole, mTrBind, mTrNoBind, bindScaleNo, noBindScaleNo, scaleInFiles);
 fprintf('NNetTypes %d, NNets %d, NTrain %d, NoBindPerc %d, NoBindThresh1 %f, NoBindTsRat %d, TestBindN %d, TestNoBindN %d\n',...
     nNetTypes, nNets, nTrain, noBindPerc, noBindThresh(1), scaleNoTs, mTsBind, mTsNoBind);
-fprintf('Accuracy %f, Precision %f, Recall %f, Specificity %f, F1 %f, TP %d, TN %d, FN %d, FP %d, TrTime %f s\n',...
-    acc, Pr, Rec, Sp, F1, TP, TN, FN, FP, etime(t2, t1));
+fprintf('Accuracy %f, Precision %f, Recall %f, Specificity %f, F1 %f, TP %d, TN %d, FN %d, FP %d, AUC %f, TrTime %f s\n',...
+    acc, Pr, Rec, Sp, F1, TP, TN, FN, FP, AUC, etime(t2, t1));

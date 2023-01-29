@@ -1,0 +1,3 @@
+Model .relu2dc mb_size 524288, max_epoch .5.5.15 ResWindow 15, BaseWindow 15, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
+NNetTypes 1, NNets 1, NTrain 10, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 919837
+Accuracy 0.997116, Precision 0.590508, Recall 0.880175, Specificity 0.997580, F1 0.706815, TP 3210, TN 917611, FN 437, FP 2226, AUC 0.997402, TrTime 5120.435374 s
