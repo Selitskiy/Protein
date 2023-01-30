@@ -373,7 +373,18 @@ for j = 1:nNetTypes
             delete(gcp('nocreate'));
             gpuDevice([]);
 
-            noBindThresh((j-1)*nNets + l) = prctile(noBindA((noBindY == categorical(1)), 2), noBindPerc);
+            curThresh = 0;
+            cntFP = floor(mAllYes * (100 - noBindPerc) / 100);
+            noBindAs = sort(noBindA(:,2), "descend");
+            for k = 1:mAllYes
+                curThresh = noBindAs(k);
+                if k >= cntFP
+                    break;
+                end
+            end
+            noBindThresh((j-1)*nNets + l) = curThresh;
+
+            %noBindThresh((j-1)*nNets + l) = prctile(noBindA((noBindY == categorical(1)), 2), noBindPerc);
         else
             noBindThresh((j-1)*nNets + l) = 0;
         end

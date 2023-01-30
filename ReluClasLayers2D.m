@@ -15,8 +15,10 @@ classdef ReluClasLayers2D
                 featureInputLayer(net.m_in)
                 fullyConnectedLayer(net.k_hid1)
                 reluLayer
+                dropoutLayer
                 fullyConnectedLayer(net.k_hid2)
                 reluLayer
+                dropoutLayer
                 fullyConnectedLayer(net.n_out)
                 softmaxLayer
                 classificationLayer

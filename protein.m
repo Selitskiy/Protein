@@ -27,15 +27,15 @@ m_in = mr_in + mb_in;
 
 n_out = 2; % bind or not
 
-bindScaleNo = 1;
-noBindScaleNo = 50;
+bindScaleNo = 1; %1;
+noBindScaleNo = 50; %50;
 
 scaleInFiles = 2;%2;
 
-noBindPerc = 70; %70;
+noBindPerc = 0; %95;
 
-nTrain = 10; %25
-nNets = 1;
+nTrain = 1; %1,5,10,20
+nNets = 10;
 
 
 % Load tarin data
