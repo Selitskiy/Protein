@@ -12,12 +12,12 @@ clear all; close all; clc;
 %% General config
 
 % Amino residue frame one-side length
-resWindowLen = 7;
+resWindowLen = 13;
 resWindowWhole = 2*resWindowLen + 1;
 resNum = 26;
 
 % RNA base frame one-side length
-baseWindowLen = 7;
+baseWindowLen = 13; %7
 baseWindowWhole = 2*baseWindowLen + 1;
 baseNum = 4;
 
@@ -34,8 +34,8 @@ scaleInFiles = 2;%2;
 
 noBindPerc = 0; %95;
 
-nTrain = 1; %1,5,10,20
-nNets = 10;
+nTrain = 1; %1,5,10,20 real number is nTrain * scaleInFiles 
+nNets = 5;
 
 
 % Load tarin data
@@ -53,12 +53,12 @@ ini_rate = 0.001;
 max_epoch = [floor(50/nTrain), floor(50/nTrain), floor(150/nTrain)]; %200
 
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
-cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1));
+%cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1));
 %cNet = SigClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = TanhClasNet2D(m_in, n_out, ini_rate, max_epoch(3));
 %cNet = RbfClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = TransClasNet2D(m_in, n_out, ini_rate, max_epoch);
-%cNet = KgClasNet2D(m_in, n_out, ini_rate, max_epoch(2));
+cNet = KgClasNet2D(m_in, n_out, ini_rate, max_epoch(2));
 
 nNetTypes = 1;
 cNetTypes = cell([nNetTypes, 1]);
