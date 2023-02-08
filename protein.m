@@ -35,7 +35,13 @@ scaleInFiles = 2;%2;
 noBindPerc = 0; %95;
 
 nTrain = 1; %1,5,10,20 real number is nTrain * scaleInFiles 
-nNets = 5;
+nNets = 5; %5;
+
+if nNets > 1
+    threshVal = floor(nNets/2 + 1);
+else
+    threshVal = 0;
+end
 
 
 % Load tarin data
@@ -60,7 +66,7 @@ max_epoch = [floor(50/nTrain), floor(50/nTrain), floor(150/nTrain)]; %200
 %cNet = TransClasNet2D(m_in, n_out, ini_rate, max_epoch);
 cNet = KgClasNet2D(m_in, n_out, ini_rate, max_epoch(2));
 
-nNetTypes = 1;
+nNetTypes = 1; %3;
 cNetTypes = cell([nNetTypes, 1]);
 
 cNetTypes{1} = cNet;
@@ -115,7 +121,7 @@ if calcAUC
 
 
     [TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
-        baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThreshAUC);
+        baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThreshAUC, threshVal);
 
 %%
     for i = 1:nStep
@@ -142,7 +148,7 @@ end
 %noBindThresh = zeros([nNets, 1]);
 
 [TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
-        baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThresh);
+        baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThresh, threshVal);
 
 i=1;
 acc = (TP(i) + TN(i)) / (TP(i) + TN(i) + FP(i) + FN(i));
@@ -184,7 +190,7 @@ end
 %%
 fprintf('Model %s mb_size %d, max_epoch %s ResWindow %d, BaseWindow %d, TrainBindN %d, TrainNoBindN %d, BindScaleNo %d, NoBindScaleNo %d, ScaleInFiles %f\n',...
     model_name, mb_size, max_epoch_str, resWindowWhole, baseWindowWhole, mTrBind, mTrNoBind, bindScaleNo, noBindScaleNo, scaleInFiles);
-fprintf('NNetTypes %d, NNets %d, NTrain %d, NoBindPerc %d, NoBindThresh1 %f, NoBindTsRat %d, TestBindN %d, TestNoBindN %d\n',...
-    nNetTypes, nNets, nTrain, noBindPerc, noBindThresh(1), scaleNoTs, mTsBind, mTsNoBind);
+fprintf('NNetTypes %d, NNets %d, NTrain %d, NoBindPerc %d, NoBindThresh1 %f, NoBindTsRat %d, TestBindN %d, TestNoBindN %d ThreshVal %d\n',...
+    nNetTypes, nNets, nTrain, noBindPerc, noBindThresh(1), scaleNoTs, mTsBind, mTsNoBind, threshVal);
 fprintf('Accuracy %f, Precision %f, Recall %f, Specificity %f, F1 %f, TP %d, TN %d, FN %d, FP %d, AUC %f, TrTime %f s\n',...
     acc, Pr, Rec, Sp, F1, TP, TN, FN, FP, AUC, etime(t2, t1));

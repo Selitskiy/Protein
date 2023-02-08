@@ -99,9 +99,18 @@ Model .kg2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, T
 NNetTypes 1, NNets 5, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178
 Accuracy 0.997221, Precision 0.734260, Recall 0.927338, Specificity 0.997700, F1 0.819581, TP 3382, TN 530954, FN 265, FP 1224, AUC 0.993780, TrTime 40110.029645 s
 
+Model .kg2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
+NNetTypes 1, NNets 5, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 3
+Accuracy 0.993895, Precision 0.528442, Recall 0.957774, Specificity 0.994143, F1 0.681096, TP 3493, TN 529061, FN 154, FP 3117, AUC 0.996750, TrTime 10.419681 s
+
+
 Model .relu2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
 NNetTypes 1, NNets 5, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178
 Accuracy 0.995485, Precision 0.609330, Recall 0.938305, Specificity 0.995877, F1 0.738854, TP 3422, TN 529984, FN 225, FP 2194, AUC 0.997637, TrTime 21399.486869 s
+
+Model .relu2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
+NNetTypes 1, NNets 5, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 3
+Accuracy 0.994745, Precision 0.568104, Recall 0.950370, Specificity 0.995049, F1 0.711120, TP 3466, TN 529543, FN 181, FP 2635, AUC 0.997769, TrTime 7.498433 s
 
 
 Model .relu2dc.kg2dc.tanh2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
@@ -112,6 +121,15 @@ Model .relu2dc.kg2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWind
 NNetTypes 2, NNets 6, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178
 Accuracy 0.997094, Precision 0.725897, Recall 0.920757, Specificity 0.997617, F1 0.811797, TP 3358, TN 530910, FN 289, FP 1268, AUC 0.995493, TrTime 11.305170 s
 
+
 Model .tanh2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
 NNetTypes 1, NNets 5, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178
 Accuracy 0.993194, Precision NaN, Recall 0.000000, Specificity 1.000000, F1 NaN, TP 0, TN 532178, FN 3647, FP 0, AUC 0.500137, TrTime 39233.879490 s
+
+Model .tanh2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
+NNetTypes 1, NNets 5, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 3
+Accuracy 0.996012, Precision 0.703614, Recall 0.715383, Specificity 0.997935, F1 0.709449, TP 2609, TN 531079, FN 1038, FP 1099, AUC 0.990411, TrTime 8.322192 s
+
+Model .tanh2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
+NNetTypes 1, NNets 5, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 1
+Accuracy 0.987139, Precision 0.334219, Recall 0.896627, Specificity 0.987760, F1 0.486933, TP 3270, TN 525664, FN 377, FP 6514, AUC 0.993367, TrTime 7.698942 s
