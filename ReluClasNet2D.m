@@ -11,7 +11,7 @@ classdef ReluClasNet2D < ReluClasLayers2D & BaseClasNet2D & MLPInputClasNet2D
             net = net@BaseClasNet2D(m_in, n_out, ini_rate, max_epoch);
             net = net@MLPInputClasNet2D();
 
-            net.name = "relu2dc";
+            net.name = "relu5do2dc";
 
         end
 

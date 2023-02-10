@@ -12,12 +12,12 @@ clear all; close all; clc;
 %% General config
 
 % Amino residue frame one-side length
-resWindowLen = 13;
+resWindowLen = 13; %13
 resWindowWhole = 2*resWindowLen + 1;
 resNum = 26;
 
 % RNA base frame one-side length
-baseWindowLen = 13; %7
+baseWindowLen = 13; %13
 baseWindowWhole = 2*baseWindowLen + 1;
 baseNum = 4;
 
@@ -35,13 +35,9 @@ scaleInFiles = 2;%2;
 noBindPerc = 0; %95;
 
 nTrain = 1; %1,5,10,20 real number is nTrain * scaleInFiles 
-nNets = 5; %5;
+nNets = 1; %5;
 
-if nNets > 1
-    threshVal = floor(nNets/2 + 1);
-else
-    threshVal = 0;
-end
+
 
 
 % Load tarin data
@@ -59,12 +55,12 @@ ini_rate = 0.001;
 max_epoch = [floor(50/nTrain), floor(50/nTrain), floor(150/nTrain)]; %200
 
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
-%cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1));
+cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1));
 %cNet = SigClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = TanhClasNet2D(m_in, n_out, ini_rate, max_epoch(3));
 %cNet = RbfClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = TransClasNet2D(m_in, n_out, ini_rate, max_epoch);
-cNet = KgClasNet2D(m_in, n_out, ini_rate, max_epoch(2));
+%cNet = KgClasNet2D(m_in, n_out, ini_rate, max_epoch(2));
 
 nNetTypes = 1; %3;
 cNetTypes = cell([nNetTypes, 1]);
@@ -75,7 +71,14 @@ cNetTypes{1} = cNet;
 %cNetTypes{2} = cNet2;
 
 %cNet3 = TanhClasNet2D(m_in, n_out, ini_rate, max_epoch(3));
+%cNetTypes{2} = cNet3;
 %cNetTypes{3} = cNet3;
+
+if nNets*nNetTypes > 1
+    threshVal = floor(nNets*nNetTypes/2) + 1;
+else
+    threshVal = 0;
+end
 
 
 [cNets, mTrBind, mTrNoBind, Xcontr, Ycontr, Ncontr, t1, t2, noBindThresh] = train_tensors(cNetTypes, nNets, nTrain, dataIdxDir, dataTrIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
@@ -120,8 +123,10 @@ if calcAUC
     end
 
 
+    maxNoBind = 378556; %0;
+
     [TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
-        baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThreshAUC, threshVal);
+        baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThreshAUC, threshVal, maxNoBind);
 
 %%
     for i = 1:nStep
@@ -148,7 +153,7 @@ end
 %noBindThresh = zeros([nNets, 1]);
 
 [TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
-        baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThresh, threshVal);
+        baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThresh, threshVal, maxNoBind);
 
 i=1;
 acc = (TP(i) + TN(i)) / (TP(i) + TN(i) + FP(i) + FN(i));

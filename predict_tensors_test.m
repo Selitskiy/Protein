@@ -1,5 +1,5 @@
 function [TP, TN, FP, FN, mBind, mNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNets, dataIdxDir, dataTrIdxFile, m_in, ...
-    resWindowLen, resWindowWhole, resNum, baseWindowLen, baseWindowWhole, baseNum, scaleNo, scaleInFiles, threshP, threshVote)
+    resWindowLen, resWindowWhole, resNum, baseWindowLen, baseWindowWhole, baseNum, scaleNo, scaleInFiles, threshP, threshVote, maxNoBind)
 
 dataTrIdxFN = strcat(dataIdxDir,'/',dataTrIdxFile);
 
@@ -148,6 +148,8 @@ sumActTNold = 0;
 nFPold = 0;
 sumActFPold = 0;
 
+mCurAcc = 0;
+
 for i = 1:ns
     dataDatFile = trIdxM(i,5);
     dataDatFN = strcat(dataIdxDir,'/',dataDatFile);
@@ -284,6 +286,12 @@ for i = 1:ns
     end
 
     fprintf('Predicting %s- dat: %d/%d\n', dataTrIdxFile,i, n);
+
+
+    if (maxNoBind) && (mCurAcc > maxNoBind)
+        break;
+    end
+    mCurAcc = mCurAcc + mCur;
 
 
     if scaleNo == 0
