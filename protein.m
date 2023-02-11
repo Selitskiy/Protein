@@ -35,7 +35,7 @@ scaleInFiles = 2;%2;
 noBindPerc = 0; %95;
 
 nTrain = 1; %1,5,10,20 real number is nTrain * scaleInFiles 
-nNets = 1; %5;
+nNets = 3; %5;
 
 
 
@@ -62,13 +62,13 @@ cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1));
 %cNet = TransClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = KgClasNet2D(m_in, n_out, ini_rate, max_epoch(2));
 
-nNetTypes = 1; %3;
+nNetTypes = 2; %3;
 cNetTypes = cell([nNetTypes, 1]);
 
 cNetTypes{1} = cNet;
 
-%cNet2 = KgClasNet2D(m_in, n_out, ini_rate, max_epoch(2));
-%cNetTypes{2} = cNet2;
+cNet2 = KgClasNet2D(m_in, n_out, ini_rate, max_epoch(2));
+cNetTypes{2} = cNet2;
 
 %cNet3 = TanhClasNet2D(m_in, n_out, ini_rate, max_epoch(3));
 %cNetTypes{2} = cNet3;
@@ -123,7 +123,7 @@ if calcAUC
     end
 
 
-    maxNoBind = 378556; %0;
+    maxNoBind = 0; %378556; %0;
 
     [TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
         baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThreshAUC, threshVal, maxNoBind);

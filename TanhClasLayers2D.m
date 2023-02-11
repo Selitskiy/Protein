@@ -15,8 +15,10 @@ classdef TanhClasLayers2D
                 featureInputLayer(net.m_in)
                 fullyConnectedLayer(net.k_hid1)
                 tanhLayer
+                %dropoutLayer
                 fullyConnectedLayer(net.k_hid2)
                 tanhLayer
+                %dropoutLayer
                 fullyConnectedLayer(net.n_out)
                 softmaxLayer
                 classificationLayer
