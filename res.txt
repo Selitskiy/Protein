@@ -205,6 +205,7 @@ Accuracy 0.993403, Precision NaN, Recall 0.000000, Specificity 1.000000, F1 NaN,
 relu2dc - with dropout .5
 relundo2dc - no dropot
 tanhdo2dc - with dropout .5
+mCur 18607564
 
 Model .relundo2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
 NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 380116 ThreshVal 0
