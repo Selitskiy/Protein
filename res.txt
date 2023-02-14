@@ -240,3 +240,13 @@ Model .relu2dc mb_size 524288, max_epoch .4.4.12 ResWindow 27, BaseWindow 27, Tr
 NNetTypes 1, NNets 1, NTrain 40, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
 Accuracy 0.993864, Precision 0.527367, Recall 0.948451, Specificity 0.994175, F1 0.677837, TP 3459, TN 529078, FN 188, FP 3100, AUC 0.997740, TrTime 30811.762515 s
 
+
+
+Model .kgdo2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
+NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+Accuracy 0.993227, Precision 0.501294, Recall 0.956128, Specificity 0.993482, F1 0.657738, TP 3487, TN 528709, FN 160, FP 3469, AUC 0.995146, TrTime 10242.735422 s
+
+Model .kg2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
+NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178
+Accuracy 0.993880, Precision 0.527786, Recall 0.958322, Specificity 0.994124, F1 0.680689, TP 3495, TN 529051, FN 152, FP 3127, AUC 0.995889, TrTime 10260.646125 s
+
