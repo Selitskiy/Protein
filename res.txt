@@ -19,6 +19,9 @@ NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 95, NoBindThresh1 0.882784, NoBindTsR
 Accuracy 0.998181, Precision 0.798121, Recall 0.721963, Specificity 0.999276, F1 0.758134, TP 2633, TN 919171, FN 1014, FP 666, AUC 0.996873, TrTime 4547.248602 s
 
 
+
+
+
 Model .relu2dc mb_size 524288, max_epoch .50.50.150 ResWindow 15, BaseWindow 15, TrainBindN 4921550, TrainNoBindN 4921550, BindScaleNo 25, NoBindScaleNo 25, ScaleInFiles 2.000000
 NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 919837
 Accuracy 0.987076, Precision 0.232645, Recall 0.988758, Specificity 0.987069, F1 0.376665, TP 3606, TN 907943, FN 41, FP 11894, AUC 0.996154, TrTime 3612.391465 s
@@ -207,6 +210,11 @@ relundo2dc - no dropot
 tanhdo2dc - with dropout .5
 mCur 18607564
 
+
+Model .relu2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
+NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 380116 ThreshVal 0
+Accuracy 0.995163, Precision 0.675416, Recall 0.945435, Specificity 0.995640, F1 0.787934, TP 3448, TN 378417, FN 199, FP 1657, AUC 0.998049, TrTime 2.831321 s
+
 Model .relundo2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
 NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 380116 ThreshVal 0
 Accuracy 0.993414, Precision 0.595858, Recall 0.954483, Specificity 0.993788, F1 0.733692, TP 3481, TN 377713, FN 166, FP 2361, AUC 0.997304, TrTime 6595.282571 s
@@ -214,4 +222,21 @@ Accuracy 0.993414, Precision 0.595858, Recall 0.954483, Specificity 0.993788, F1
 Model .tanhdo2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
 NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
 Accuracy 0.991006, Precision 0.382282, Recall 0.521799, Specificity 0.994222, F1 0.441275, TP 1903, TN 529103, FN 1744, FP 3075, AUC 0.921268, TrTime 20882.553708 s
+
+Model .tanh2dc mb_size 524288, max_epoch .50.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
+NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+Accuracy 0.993354, Precision 0.514007, Recall 0.432684, Specificity 0.997196, F1 0.469853, TP 1578, TN 530686, FN 2069, FP 1492, AUC 0.959359, TrTime 2.437413 s
+
+
+Model .relu2dc mb_size 524288, max_epoch .100.100.300 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
+NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+Accuracy 0.994228, Precision 0.544663, Recall 0.926241, Specificity 0.994694, F1 0.685958, TP 3378, TN 529354, FN 269, FP 2824, AUC 0.996424, TrTime 13766.513286 s
+
+Model .relu2dc mb_size 524288, max_epoch .4.4.14 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
+NNetTypes 1, NNets 1, NTrain 20, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+Accuracy 0.993601, Precision 0.516254, Recall 0.949273, Specificity 0.993904, F1 0.668792, TP 3462, TN 528934, FN 185, FP 3244, AUC 0.997202, TrTime 15263.783780 s
+
+Model .relu2dc mb_size 524288, max_epoch .4.4.12 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 9843100, BindScaleNo 1, NoBindScaleNo 50, ScaleInFiles 2.000000
+NNetTypes 1, NNets 1, NTrain 40, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+Accuracy 0.993864, Precision 0.527367, Recall 0.948451, Specificity 0.994175, F1 0.677837, TP 3459, TN 529078, FN 188, FP 3100, AUC 0.997740, TrTime 30811.762515 s
 
