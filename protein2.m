@@ -31,9 +31,11 @@ m_in = mr_in + mb_in;
 n_out = 2; % bind or not
 
 bindScaleNo = 1; %1;
-noBindScaleNo = 50; %50;
+noBindScaleNo = 0; %50;
 
-scaleInFiles = 2;%2;
+%scaleInFiles=2;
+foldInFiles = 4;
+folds = foldInFiles * floor((foldInFiles-1)/2);
 
 noBindPerc = 0; %95;
 
@@ -44,7 +46,7 @@ nNets = 1; %5;
 
 
 % Load tarin data
-dataIdxDir = '/media/data3/Protein/practip-data';
+dataIdxDir = '/media/data2/Protein/practip-data';
 dataTrIdxFile = 'train.lst';
 
 
@@ -85,8 +87,8 @@ else
 end
 
 
-[cNets, mTrBind, mTrNoBind, Xcontr, Ycontr, Ncontr, t1, t2, noBindThresh] = train_tensors(cNetTypes, nNets, nTrain, dataIdxDir, dataTrIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
-    baseWindowLen, baseWindowWhole, baseNum, bindScaleNo, noBindScaleNo, scaleInFiles, noBindPerc);
+[cNets, mTrBind, mTrNoBind, Xcontr, Ycontr, Ncontr, t1, t2, noBindThresh] = train_tensors_fold(cNetTypes, nNets, nTrain, dataIdxDir, dataTrIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
+    baseWindowLen, baseWindowWhole, baseNum, bindScaleNo, noBindScaleNo, foldInFiles, noBindPerc);
 
 [nNets, ~] = size(cNets);
 
@@ -198,7 +200,7 @@ end
 
 %%
 fprintf('Model %s mb_size %d, max_epoch %s ResWindow %d, BaseWindow %d, TrainBindN %d, TrainNoBindN %d, BindScaleNo %d, NoBindScaleNo %d, ScaleInFiles %f\n',...
-    model_name, mb_size, max_epoch_str, resWindowWhole, baseWindowWhole, mTrBind, mTrNoBind, bindScaleNo, noBindScaleNo, scaleInFiles);
+    model_name, mb_size, max_epoch_str, resWindowWhole, baseWindowWhole, mTrBind, mTrNoBind, bindScaleNo, noBindScaleNo, foldInFiles);
 fprintf('NNetTypes %d, NNets %d, NTrain %d, NoBindPerc %d, NoBindThresh1 %f, NoBindTsRat %d, TestBindN %d, TestNoBindN %d ThreshVal %d\n',...
     nNetTypes, nNets, nTrain, noBindPerc, noBindThresh(1), scaleNoTs, mTsBind, mTsNoBind, threshVal);
 fprintf('Accuracy %f, Precision %f, Recall %f, Specificity %f, F1 %f, TP %d, TN %d, FN %d, FP %d, AUC %f, TrTime %f s\n',...
