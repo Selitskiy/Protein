@@ -364,18 +364,15 @@ for j = 1:nNetTypes
         cNet = cNet.Create();
     
 
+        for k = 1:foldInFiles
+            for m = k+1:foldInFiles
 
+                %Saved name
+                cNetName = strcat(dataIdxDir,'/prot.', string(cNet.name), '.', string(cNet.mb_size), '.', string(cNet.max_epoch),...
+                            '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), '.', string(mAllNo(k)), ...
+                            '.', string(mAllNo(m)), '.', string(l), '.', string(k), '.', string(m), '.mat');
 
-        %Saved name
-        %cNetName = strcat(dataIdxDir,'/prot.', string(cNet.name), '.', string(cNet.mb_size), '.', string(cNet.max_epoch),...
-        %    '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), '.', string(mAllNo),...
-        %    '.', string(l), '.', string(nTrain), '.mat');
-
-
-        %if ~isfile(cNetName)
-
-            for k = 1:foldInFiles
-                for m = k+1:foldInFiles
+                if ~isfile(cNetName)
 
                     mWhole = mAllYes + mAllNo(k) + mAllNo(m);
 
@@ -420,7 +417,7 @@ for j = 1:nNetTypes
 
 
 
-                    fprintf('Training Net type %d, Net instance %d, Train fold %d\n', j, l, k);
+                    fprintf('Training Net type %d, Net instance %d, Train folds %d %d\n', j, l, k, m);
 
                     % GPU on
                     gpuDevice(1);
@@ -433,16 +430,16 @@ for j = 1:nNetTypes
                     % GPU off
                     delete(gcp('nocreate'));
                     gpuDevice([]);
+
+                    save(cNetName, 'cNet');
+                else
+
+                    fprintf('Loading Net type %d, Net instance %d, Train folds %d %d\n', j, l, k, m);
+                    load(cNetName, 'cNet');
                 end
             end
+        end
 
-            %save(cNetName, 'cNet');
-        
-        %else
-
-        %    load(cNetName, 'cNet');
-        %    fprintf('Loading Net type %d, Net instance %d\n', j, l);
-        %end
 
         cNets{(j-1)*nNets + l} = cNet;
 

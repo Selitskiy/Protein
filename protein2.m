@@ -34,7 +34,7 @@ bindScaleNo = 1; %1;
 noBindScaleNo = 0; %50;
 
 %scaleInFiles=2;
-foldInFiles = 4;
+foldInFiles = 5;
 folds = foldInFiles * floor((foldInFiles-1)/2);
 
 noBindPerc = 0; %95;
@@ -57,7 +57,7 @@ dataTrIdxFile = 'train.lst';
 
 %%
 ini_rate = 0.001; 
-max_epoch = [floor(50/nTrain), floor(50/nTrain), floor(150/nTrain)] * 20; %200
+max_epoch = [floor(50/nTrain), floor(50/nTrain), floor(150/nTrain)] /2; %* 20; %200
 
 
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
