@@ -15,12 +15,12 @@ addpath('~/Protein/');
 %% General config
 
 % Amino residue frame one-side length
-resWindowLen = 23; %13
+resWindowLen = 13; %13
 resWindowWhole = 2*resWindowLen + 1;
 resNum = 26;
 
 % RNA base frame one-side length
-baseWindowLen = 23; %13
+baseWindowLen = 13; %13
 baseWindowWhole = 2*baseWindowLen + 1;
 baseNum = 4;
 
@@ -98,8 +98,8 @@ end
 dataTsIdxFile = 'test.lst';
 scaleNoTs = 0;
 
-%
-calcAUC = 1;
+%%
+calcAUC = 0;
 AUC = 0;
 
 if calcAUC
@@ -131,7 +131,7 @@ if calcAUC
 
     maxNoBind = 0; %378556; %0;
 
-    [TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
+    [TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_fold(cNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
         baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThreshAUC, threshVal, maxNoBind);
 
 %%
@@ -157,24 +157,45 @@ end
 
 %%
 %noBindThresh = zeros([nNets, 1]);
+maxNoBind = 0;
 
-[TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_test(cNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
+[TP, TN, FP, FN, mTsBind, mTsNoBind, meanActTP, meanActFN, meanActTN, meanActFP, sigActTP, sigActFN] = predict_tensors_fold(cNets, dataIdxDir, dataTsIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
         baseWindowLen, baseWindowWhole, baseNum, scaleNoTs, 1, noBindThresh, threshVal, maxNoBind);
 
-i=1;
-acc = (TP(i) + TN(i)) / (TP(i) + TN(i) + FP(i) + FN(i));
-Pr = TP(i) / (TP(i) + FP(i));
-Rec = TP(i) / (TP(i) + FN(i));
-Sp = TN(i) / (TN(i) + FP(i));
-Fo = FP(i) / (FP(i) + TN(i));
-F1 = 2*Rec*Pr/(Rec+Pr);
+%%
+acc = (TP + TN) ./ (TP + TN + FP + FN);
+Pr = TP ./ (TP + FP);
+Rec = TP ./ (TP + FN);
+Sp = TN ./ (TN + FP);
+Fo = FP ./ (FP + TN);
+F1 = 2*Rec.*Pr./(Rec+Pr);
+
+TPM = mean(TP);
+TNM = mean(TN);
+FPM = mean(FP);
+FNM = mean(FN);
+accM = mean(acc);
+PrM = mean(Pr);
+RecM = mean(Rec);
+SpM = mean(Sp);
+F1M = mean(F1);
+
+TPS = std(TP);
+TNS = std(TN);
+FPS = std(TP);
+FNS = std(FN);
+accS = std(acc);
+PrS = std(Pr);
+RecS = std(Rec);
+SpS = std(Sp);
+F1S = std(F1);
 
 %%
 model_name = "";
 for i = 1:nNetTypes
     model_name = strcat(model_name, ".", cNetTypes{i}.name);
 end
-mb_size = cNets{1}.mb_size;
+mb_size = cNets{1,1}.mb_size;
 
 [~, nEns] = size(max_epoch);
 max_epoch_str = "";
@@ -199,9 +220,11 @@ if calcAUC
 end
 
 %%
-fprintf('Model %s mb_size %d, max_epoch %s ResWindow %d, BaseWindow %d, TrainBindN %d, TrainNoBindN %d, BindScaleNo %d, NoBindScaleNo %d, ScaleInFiles %f\n',...
+fprintf('Model %s mb_size %d, max_epoch %s ResWindow %d, BaseWindow %d, TrainBindN %d, TrainNoBindN %d, BindScaleNo %d, NoBindScaleNo %d, ScaleInFiles %f\n\n',...
     model_name, mb_size, max_epoch_str, resWindowWhole, baseWindowWhole, mTrBind, mTrNoBind, bindScaleNo, noBindScaleNo, foldInFiles);
-fprintf('NNetTypes %d, NNets %d, NTrain %d, NoBindPerc %d, NoBindThresh1 %f, NoBindTsRat %d, TestBindN %d, TestNoBindN %d ThreshVal %d\n',...
+
+fprintf('NNetTypes %d, NNets %d, NTrain %d, NoBindPerc %d, NoBindThresh1 %f, NoBindTsRat %d, TestBindN %d, TestNoBindN %d ThreshVal %d\n\n',...
     nNetTypes, nNets, nTrain, noBindPerc, noBindThresh(1), scaleNoTs, mTsBind, mTsNoBind, threshVal);
-fprintf('Accuracy %f, Precision %f, Recall %f, Specificity %f, F1 %f, TP %d, TN %d, FN %d, FP %d, AUC %f, TrTime %f s\n',...
-    acc, Pr, Rec, Sp, F1, TP, TN, FN, FP, AUC, etime(t2, t1));
+
+fprintf('Accuracy %f+-%f, Precision %f+-%f, Recall %f+-%f, Specificity %f+-%f, F1 %f+-%f, TP %f+-%f, TN %f+-%f, FN %f+-%f, FP %f+-%f, AUC %f, TrTime %f\n',...
+    accM, accS, PrM, PrS, RecM, RecS, SpM, SpS, F1M, F1S, TPM, TPS, TNM, TNS, FNM, FNS, FPM, FPS, AUC, etime(t2, t1));

@@ -26,6 +26,7 @@ end
 trBindM = zeros([mAll, m_in]);
 trBindY = categorical(ones([mAll, 1]));
 
+
 % Fill in all residue-base pairs - positive examples part of training dataset
 mCur = 1;
 for i = 1:n
@@ -181,7 +182,7 @@ for f = 1:foldInFiles
                     '.', string(mAllNo(f)), '.', string(f), '.', string(foldInFiles), '.mat');
 
     if isfile(dataTrNoBindFN)
-        fprintf('Loading %s- dat: %d fold slice %d\n', dataTrNoBindFN, i, f);
+        fprintf('Found %s- dat: %d fold slice %d\n', dataTrNoBindFN, i, f);
 
         %load(dataTrNoBindFN, 'trNoBindM');
     else
@@ -308,7 +309,8 @@ end
 %% Repeated retraining with new no-bind folds
 [nNetTypes, ~] = size(cNetTypes);
 
-cNets = cell([nNets*nNetTypes, 1]);
+folds = foldInFiles * floor((foldInFiles-1)/2);
+cNets = cell([nNets*nNetTypes, folds]);
 
 
 %nTrainMax = floor((mCur-mAllYes)/mAllNo);
@@ -359,13 +361,12 @@ for j = 1:nNetTypes
 
 
     for l = 1:nNets
-
-        % Resets weights
-        cNet = cNet.Create();
     
-
+        fold = 0;
         for k = 1:foldInFiles
             for m = k+1:foldInFiles
+
+                fold = fold + 1;
 
                 %Saved name
                 cNetName = strcat(dataIdxDir,'/prot.', string(cNet.name), '.', string(cNet.mb_size), '.', string(cNet.max_epoch),...
@@ -381,16 +382,17 @@ for j = 1:nNetTypes
 
                     %fprintf('Loading %s+ dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
 
-                    for k = 1:bindScaleNo
-                        trMX(1+(k-1)*mAll:k*mAll,:) = trBindM;
-                        trMY(1+(k-1)*mAll:k*mAll,:) = trBindY;
+                    for i = 1:bindScaleNo
+                        trMX(1+(i-1)*mAll:i*mAll,:) = trBindM;
+                        trMY(1+(i-1)*mAll:i*mAll,:) = trBindY;
                     end
 
 
-                    fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
-
                     dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
                     '.', string(mAllNo(k)), '.', string(k), '.', string(foldInFiles), '.mat');
+
+                    fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
+
 
                     load(dataTrNoBindFN, 'trNoBindM');
 
@@ -404,6 +406,9 @@ for j = 1:nNetTypes
 
                     dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
                     '.', string(mAllNo(m)), '.', string(m), '.', string(foldInFiles), '.mat');
+
+                    fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
+
 
                     load(dataTrNoBindFN, 'trNoBindM');
 
@@ -419,6 +424,9 @@ for j = 1:nNetTypes
 
                     fprintf('Training Net type %d, Net instance %d, Train folds %d %d\n', j, l, k, m);
 
+                    % Resets weights
+                    cNet = cNet.Create();
+
                     % GPU on
                     gpuDevice(1);
                     reset(gpuDevice(1));
@@ -432,16 +440,22 @@ for j = 1:nNetTypes
                     gpuDevice([]);
 
                     save(cNetName, 'cNet');
+
+                    clear("trMX");                    
+                    clear("trMY");
                 else
 
-                    fprintf('Loading Net type %d, Net instance %d, Train folds %d %d\n', j, l, k, m);
+                    fprintf('Loading %s Net type %d, Net instance %d, Train folds %d %d\n', cNetName, j, l, k, m);
                     load(cNetName, 'cNet');
                 end
+
+                cNets{(j-1)*nNets + l, fold} = cNet;
+
             end
         end
 
 
-        cNets{(j-1)*nNets + l} = cNet;
+
 
 
         %% Find threshold for given percentle of FP no-bind predictions
