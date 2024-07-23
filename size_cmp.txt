@@ -1,0 +1,46 @@
+Model .relu2dc10 mb_size 524288, max_epoch .25.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 7374009, BindScaleNo 7461105, NoBindScaleNo 7476433, ScaleInFiles 7906157.000000
+
+Model 7.254019e+06 mb_size 1, max_epoch   ResWindow 5, BaseWindow NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+
+Accuracy 0.992651+-0.000855, Precision 0.479806+-0.033044, Recall 0.852098+-0.008526, Specificity 0.993615+-0.000872, F1 0.613268+-0.026864, TP 3107.600000+-31.095552, TN 528779.800000+-464.214462, FN 539.400000+-31.095552, FP 3398.200000+-31.095552, AUC 0.000000, TrTime 20638.692826
+
+>> 
+
+Model .relu2dc50 mb_size 524288, max_epoch .25.25.75 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 7374009, BindScaleNo 7461105, NoBindScaleNo 7476433, ScaleInFiles 7906157.000000
+
+Model 7.254019e+06 mb_size 1, max_epoch   ResWindow 5, BaseWindow NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+
+Accuracy 0.992657+-0.000761, Precision 0.480942+-0.027157, Recall 0.920483+-0.025850, Specificity 0.993152+-0.000800, F1 0.631244+-0.024168, TP 3357.000000+-94.273833, TN 528533.700000+-425.775906, FN 290.000000+-94.273833, FP 3644.300000+-94.273833, AUC 0.000000, TrTime 2.412550
+
+>> 
+
+Model .relu2dc100 mb_size 524288, max_epoch .25.25.75 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 7374009, BindScaleNo 7461105, NoBindScaleNo 7476433, ScaleInFiles 7906157.000000
+
+Model 7.254019e+06 mb_size 1, max_epoch   ResWindow 5, BaseWindow NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+
+Accuracy 0.992924+-0.000944, Precision 0.461436+-0.103671, Recall 0.755854+-0.300107, Specificity 0.994549+-0.002355, F1 0.552889+-0.198121, TP 2756.600000+-1094.490059, TN 529277.000000+-1253.529772, FN 890.400000+-1094.490059, FP 2901.000000+-1094.490059, AUC 0.000000, TrTime 2651.392234
+
+
+
+Model .relu2dc10 mb_size 524288, max_epoch .70.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 7374009, BindScaleNo 7461105, NoBindScaleNo 7476433, ScaleInFiles 7906157.000000
+
+Model 7.254019e+06 mb_size 1, max_epoch   ResWindow 5, BaseWindow NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+
+Accuracy 0.991976+-0.002584, Precision 0.463710+-0.071463, Recall 0.809186+-0.167241, Specificity 0.993229+-0.002976, F1 0.579071+-0.087494, TP 2951.100000+-609.928311, TN 528574.700000+-1583.767874, FN 695.900000+-609.928311, FP 3603.300000+-609.928311, AUC 0.000000, TrTime 10959.501548
+
+>> 
+
+Model .relu2dc50 mb_size 524288, max_epoch .70.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 7374009, BindScaleNo 7461105, NoBindScaleNo 7476433, ScaleInFiles 7906157.000000
+
+Model 7.254019e+06 mb_size 1, max_epoch   ResWindow 5, BaseWindow NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+
+Accuracy 0.992676+-0.000971, Precision 0.482677+-0.034815, Recall 0.936770+-0.010041, Specificity 0.993059+-0.000954, F1 0.636470+-0.031339, TP 3416.400000+-36.618757, TN 528484.300000+-507.672259, FN 230.600000+-36.618757, FP 3693.700000+-36.618757, AUC 0.000000, TrTime 15931.260336
+
+>> 
+
+Model .relu2dc100 mb_size 524288, max_epoch .70.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 7374009, BindScaleNo 7461105, NoBindScaleNo 7476433, ScaleInFiles 7906157.000000
+
+Model 7.254019e+06 mb_size 1, max_epoch   ResWindow 5, BaseWindow NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+
+Accuracy 0.992312+-0.000964, Precision 0.469259+-0.033424, Recall 0.926707+-0.021561, Specificity 0.992762+-0.000932, F1 0.622479+-0.031647, TP 3379.700000+-78.632832, TN 528326.100000+-495.878670, FN 267.300000+-78.632832, FP 3851.900000+-78.632832, AUC 0.000000, TrTime 11400.183880
+>> 

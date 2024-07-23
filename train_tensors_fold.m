@@ -368,19 +368,54 @@ for j = 1:nNetTypes
 
                 fold = fold + 1;
 
-                %Saved name
+                %Exact saved name
+                epochsTarget = cNet.max_epoch;
                 cNetName = strcat(dataIdxDir,'/prot.', string(cNet.name), '.', string(cNet.mb_size), '.', string(cNet.max_epoch),...
                             '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), '.', string(mAllNo(k)), ...
                             '.', string(mAllNo(m)), '.', string(l), '.', string(k), '.', string(m), '.mat');
-
                 if ~isfile(cNetName)
+
+
+                    %Not exact epochs match
+                    cNetWC = strcat(dataIdxDir,'/prot.', string(cNet.name), '.', string(cNet.mb_size), '.*',...
+                            '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), '.', string(mAllNo(k)), ...
+                            '.', string(mAllNo(m)), '.', string(l), '.', string(k), '.', string(m), '.mat');
+                    cNetFNames = dir(cNetWC);
+                    %cNetNames = ls(cNetWC);
+                    [nNames,~] = size(cNetFNames);
+
+                    dEpoch = -1;
+                    if nNames > 0
+                        cNetNames = ls(cNetWC);
+                        cNetFNameLoad = strcat(cNetFNames(1).folder,'/',cNetFNames(1).name);
+                        cNetNameLoad = cNetNames(1,:);
+                        tokens = split(cNetNameLoad,'.');
+                        epochs = str2num(tokens{4});
+                        dEpoch = epochsTarget - epochs;
+                    end
+
+                    if dEpoch > 0
+                        % Reset epochs
+                        fprintf('Loading %s Net type %d, Net instance %d, Train folds %d %d\n', cNetFNameLoad, j, l, k, m);
+                        load(cNetFNameLoad, 'cNet');
+
+                        cNet.options = trainingOptions('adam', ...
+                            'ExecutionEnvironment','auto',... %'parallel',...
+                            'Shuffle', 'every-epoch',...
+                            'MiniBatchSize', cNet.mb_size, ...
+                            'InitialLearnRate', cNet.ini_rate, ...
+                            'MaxEpochs',dEpoch);
+                    else
+                        % Resets weights
+                        cNet = cNet.Create();
+                    end
+                
 
                     mWhole = mAllYes + mAllNo(k) + mAllNo(m);
 
                     trMX = zeros([mWhole, m_in]);
                     trMY = categorical(zeros([mWhole, 1]));
 
-                    %fprintf('Loading %s+ dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
 
                     for i = 1:bindScaleNo
                         trMX(1+(i-1)*mAll:i*mAll,:) = trBindM;
@@ -423,9 +458,12 @@ for j = 1:nNetTypes
 
 
                     fprintf('Training Net type %d, Net instance %d, Train folds %d %d\n', j, l, k, m);
+                    
+                    %fprintf('Loading %s Net type %d, Net instance %d, Train folds %d %d\n', cNetName, j, l, k, m);
+                    %load(cNetName, 'cNet');
 
                     % Resets weights
-                    cNet = cNet.Create();
+                    %cNet = cNet.Create();
 
                     % GPU on
                     gpuDevice(1);
@@ -439,6 +477,14 @@ for j = 1:nNetTypes
                     delete(gcp('nocreate'));
                     gpuDevice([]);
 
+
+                    cNet.options = trainingOptions('adam', ...
+                            'ExecutionEnvironment','auto',... %'parallel',...
+                            'Shuffle', 'every-epoch',...
+                            'MiniBatchSize', cNet.mb_size, ...
+                            'InitialLearnRate', cNet.ini_rate, ...
+                            'MaxEpochs', epochsTarget);
+                    cNet.max_epoch = epochsTarget;
                     save(cNetName, 'cNet');
 
                     clear("trMX");                    

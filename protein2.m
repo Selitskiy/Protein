@@ -57,11 +57,11 @@ dataTrIdxFile = 'train.lst';
 
 %%
 ini_rate = 0.001; 
-max_epoch = [floor(50/nTrain), floor(50/nTrain), floor(150/nTrain)] /2; %* 20; %200
+max_epoch = [floor(70/nTrain), floor(50/nTrain), floor(150/nTrain)]; %* 20; %200
 
 
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
-cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1), 0.5);
+cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = SigClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = TanhClasNet2D(m_in, n_out, ini_rate, max_epoch(3));
 %cNet = RbfClasNet2D(m_in, n_out, ini_rate, max_epoch);
