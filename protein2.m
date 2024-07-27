@@ -1,3 +1,4 @@
+
 %% Clear everything 
 clearvars -global;
 clear all; close all; clc;
@@ -57,11 +58,16 @@ dataTrIdxFile = 'train.lst';
 
 %%
 ini_rate = 0.001; 
-max_epoch = [floor(70/nTrain), floor(50/nTrain), floor(150/nTrain)]; %* 20; %200
+max_epoch = [floor(25/nTrain), floor(50/nTrain), floor(150/nTrain)]; %* 20; %200
 
 
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
-cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
+%cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
+%cNet = Relu1aClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
+%cNet = Relu1bClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
+%cNet = Relu3aClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
+cNet = Relu3bClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
+
 %cNet = SigClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = TanhClasNet2D(m_in, n_out, ini_rate, max_epoch(3));
 %cNet = RbfClasNet2D(m_in, n_out, ini_rate, max_epoch);
@@ -164,11 +170,17 @@ maxNoBind = 0;
 
 %%
 acc = (TP + TN) ./ (TP + TN + FP + FN);
+
 Pr = TP ./ (TP + FP);
+Pr(TP==0) = 0;
+
 Rec = TP ./ (TP + FN);
 Sp = TN ./ (TN + FP);
 Fo = FP ./ (FP + TN);
+
 F1 = 2*Rec.*Pr./(Rec+Pr);
+F1(TP==0) = 0;
+
 
 TPM = mean(TP);
 TNM = mean(TN);
