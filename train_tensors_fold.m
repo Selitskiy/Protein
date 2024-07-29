@@ -310,7 +310,13 @@ end
 [nNetTypes, ~] = size(cNetTypes);
 
 folds = foldInFiles * floor((foldInFiles-1)/2);
-cNets = cell([nNets*nNetTypes, folds]);
+
+if nTrain == 1
+    cNets = cell([nNets*nNetTypes, folds]);
+else
+    cNets = cell([nNets*nNetTypes, 1]);
+end
+
 
 
 %nTrainMax = floor((mCur-mAllYes)/mAllNo);
@@ -351,16 +357,26 @@ noBindThresh = zeros([nNets*nNetTypes, 1]);
 %reset(gpuDevice(1));
 
 t1 = clock();
+%Number of Net types in ensemble
 for j = 1:nNetTypes
 
     % Sets new current model in heterogenious model list
     cNet = cNetTypes{j};
 
+    %Number of retrains on Big Data (not fitting into memory
+    if nTrain ~= 1
+        epochsTarget = 1;
+        nReTrain = floor(cNet.max_epoch/(foldInFiles-1)/epochsTarget);
+    end
+
     mWhole = mAllYes + mAllNo(1)*2;
     cNet.mb_size = 2^floor(log2(mWhole)-4);
 
-
+    %Number of Nets of the same type in ensemble
     for l = 1:nNets
+
+
+        if nTrain == 1
     
         fold = 0;
         for k = 1:foldInFiles
@@ -459,11 +475,6 @@ for j = 1:nNetTypes
 
                     fprintf('Training Net type %d, Net instance %d, Train folds %d %d\n', j, l, k, m);
                     
-                    %fprintf('Loading %s Net type %d, Net instance %d, Train folds %d %d\n', cNetName, j, l, k, m);
-                    %load(cNetName, 'cNet');
-
-                    % Resets weights
-                    %cNet = cNet.Create();
 
                     % GPU on
                     gpuDevice(1);
@@ -471,7 +482,7 @@ for j = 1:nNetTypes
 
                     % Updates weights from previous training with previous slice of no-bind data
                     cNet = cNet.Train(trMX, trMY);
-                    %cNets{(j-1)*nNets + l} = cNet;
+
 
                     % GPU off
                     delete(gcp('nocreate'));
@@ -500,7 +511,187 @@ for j = 1:nNetTypes
             end
         end
 
+        %Retrain for Big Data
+        else
 
+            fold = 1;
+            n1 = 1;
+            k1 = 1;
+
+            %epochsTarget = 1;
+            cNetWC = strcat(dataIdxDir,'/prot.bd.', string(cNet.name), '.', string(cNet.mb_size), '.', string(cNet.max_epoch),...
+                            '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), '.*.*.', ...
+                            string(l), '.*.*.*.mat'); % k.m.n.mat in wildcards
+
+            cNetFNames = dir(cNetWC);
+            [nNames,~] = size(cNetFNames);
+
+
+            epochs = -1;
+            if nNames > 0
+                cNetNames = ls(cNetWC);
+                cNetFNameLoad = strcat(cNetFNames(1).folder,'/',cNetFNames(1).name);
+                cNetNameLoad = cNetNames(1,:);
+                tokens = split(cNetNameLoad,'.');
+                epochs = str2num(tokens{5});
+                no_k = str2num(tokens{6});
+                no_m = str2num(tokens{7});
+                l1 = str2num(tokens{11});
+                k1 = str2num(tokens{12});
+                m1 = str2num(tokens{13});
+                n1 = str2num(tokens{14});
+
+                cNetName = strcat(dataIdxDir,'/prot.bd.', string(cNet.name), '.', string(cNet.mb_size), '.', string(cNet.max_epoch),...
+                        '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), '.', string(mAllNo(k1)), ...
+                        '.', string(mAllNo(m1)), '.', string(l1), '.', string(k1), '.', string(m1), '.', string(n1), '.mat');
+                if ~isfile(cNetName)
+                    epochs = -1;
+                end
+            end
+
+            LoopBr = 0;
+            if epochs > 0
+                % Load partially trained model
+                fprintf('Loading %s Net type %d, Net instance %d, Train folds %d %d %d\n', cNetName, j, l, k1, m1, n1);
+                load(cNetName, 'cNet');
+                cNets{(j-1)*nNets + l, fold} = cNet;
+                m1 = m1 + 1;
+                LoopBr = 1;
+                if m1 > foldInFiles
+                    k1 = k1 + 1;
+                    m1 = k1 + 1;
+                end
+            else
+                % Resets weights
+                cNet = cNet.Create();
+            end
+
+            cNet.options = trainingOptions('adam', ...
+                            'ExecutionEnvironment','auto',... %'parallel',...
+                            'Shuffle', 'every-epoch',...
+                            'MiniBatchSize', cNet.mb_size, ...
+                            'InitialLearnRate', cNet.ini_rate, ...
+                            'MaxEpochs', epochsTarget);
+
+
+
+            %fold = 0;
+            for n = n1:nReTrain
+                %fold = 0;
+                for k = k1:foldInFiles
+
+                    if ~LoopBr
+                        m1 = k+1;
+                    end
+                    for m = m1:foldInFiles
+
+                        %fold = 1;
+                        cNetNameNew = strcat(dataIdxDir,'/prot.bd.', string(cNet.name), '.', string(cNet.mb_size), '.', string(cNet.max_epoch),...
+                                    '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), '.', string(mAllNo(k)), ...
+                                    '.', string(mAllNo(m)), '.', string(l), '.', string(k), '.', string(m), '.', string(n), '.mat');
+
+
+                        mWhole = mAllYes + mAllNo(k) + mAllNo(m);
+
+                        trMX = zeros([mWhole, m_in]);
+                        trMY = categorical(zeros([mWhole, 1]));
+
+
+                        for i = 1:bindScaleNo
+                            trMX(1+(i-1)*mAll:i*mAll,:) = trBindM;
+                            trMY(1+(i-1)*mAll:i*mAll,:) = trBindY;
+                        end
+
+
+                        dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
+                                        '.', string(mAllNo(k)), '.', string(k), '.', string(foldInFiles), '.mat');
+
+                        fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
+
+
+                        load(dataTrNoBindFN, 'trNoBindM');
+
+                        trNoBindY = categorical(zeros([mAllNo(k), 1]));
+
+                        trMX(mAllYes+1:mAllYes+mAllNo(k),:) = trNoBindM;
+                        trMY(mAllYes+1:mAllYes+mAllNo(k),:) = trNoBindY;
+
+                        clear("trNoBindM");
+
+
+                        dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
+                                        '.', string(mAllNo(m)), '.', string(m), '.', string(foldInFiles), '.mat');
+
+                        fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
+
+
+                        load(dataTrNoBindFN, 'trNoBindM');
+
+                        trNoBindY = categorical(zeros([mAllNo(m), 1]));
+
+                        trMX(mAllYes+mAllNo(k)+1:end,:) = trNoBindM;
+                        trMY(mAllYes+mAllNo(k)+1:end,:) = trNoBindY;      
+
+                        clear("trNoBindM");                    
+                        clear("trNoBindY");
+
+
+
+                        fprintf('Training Net type %d, Net instance %d, Train folds %d %d %d\n', j, l, k, m, n);
+                    
+
+                        % GPU on
+                        gpuDevice(1);
+                        reset(gpuDevice(1));
+
+                        % Updates weights from previous training with previous slice of no-bind data
+                        cNet = cNet.Train(trMX, trMY);
+
+
+                        % GPU off
+                        delete(gcp('nocreate'));
+                        gpuDevice([]);
+
+
+                        cNet.options = trainingOptions('adam', ...
+                            'ExecutionEnvironment','auto',... %'parallel',...
+                            'Shuffle', 'every-epoch',...
+                            'MiniBatchSize', cNet.mb_size, ...
+                            'InitialLearnRate', cNet.ini_rate, ...
+                            'MaxEpochs', epochsTarget);
+
+                        %cNet.max_epoch = epochsTarget;
+
+                        fprintf('Saving %s Net type %d, Net instance %d, Train folds %d %d %d\n', cNetNameNew, j, l, k, m, n);
+                        save(cNetNameNew, 'cNet');
+
+                        if exist('cNetName','var')
+                            fprintf('Deleting %s Net type %d, Net instance %d, Train folds %d %d %d\n', cNetName, j, l, k1, m1, n1);
+                            delete(cNetName);
+                        end
+                        %Save old name
+                        cNetName = cNetNameNew;
+
+                        clear("trMX");                    
+                        clear("trMY");
+
+
+                        cNets{(j-1)*nNets + l, fold} = cNet;
+
+                    end
+
+                end
+
+                %Restore regular iteration from the saved checkpoint model
+                if LoopBr
+                    k1 = 1;
+                    LoopBr = 0;
+                    continue;
+                end
+
+            end
+
+        end
 
 
 

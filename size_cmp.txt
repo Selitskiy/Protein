@@ -69,9 +69,27 @@ Model 7.254019e+06 mb_size 1, max_epoch   ResWindow 5, BaseWindow NNetTypes 1, N
 Accuracy 0.992456+-0.000939, Precision 0.424487+-0.152291, Recall 0.830436+-0.292833, Specificity 0.993566+-0.002462, F1 0.561050+-0.198862, TP 3028.600000+-1067.962359, TN 528754.100000+-1310.084259, FN 618.400000+-1067.962359, FP 3423.900000+-1067.962359, AUC 0.000000, TrTime 2.482196
 >> 
 
+
 Model .relu3b2dc50 mb_size 524288, max_epoch .25.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 7374009, BindScaleNo 7461105, NoBindScaleNo 7476433, ScaleInFiles 7906157.000000
 
 Model 7.254019e+06 mb_size 1, max_epoch   ResWindow 5, BaseWindow NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
 
 Accuracy 0.992440+-0.001096, Precision 0.473892+-0.038636, Recall 0.921881+-0.033591, Specificity 0.992924+-0.001010, F1 0.625379+-0.038644, TP 3362.100000+-122.504830, TN 528412.100000+-537.608997, FN 284.900000+-122.504830, FP 3765.900000+-122.504830, AUC 0.000000, TrTime 9785.113513
+>> 
+
+
+Model .relu42dc50 mb_size 524288, max_epoch .25.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 7374009, BindScaleNo 7461105, NoBindScaleNo 7476433, ScaleInFiles 7906157.000000
+
+Model 7.254019e+06 mb_size 1, max_epoch   ResWindow 5, BaseWindow NNetTypes 1, NNets 1, NTrain 1, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+
+Accuracy 0.992423+-0.001098, Precision 0.422183+-0.152481, Recall 0.717686+-0.355372, Specificity 0.994306+-0.003054, F1 0.511596+-0.205292, TP 2617.400000+-1296.041855, TN 529147.700000+-1625.129810, FN 1029.600000+-1296.041855, FP 3030.300000+-1296.041855, AUC 0.000000, TrTime 24877.437357
+>> 
+
+
+Retrain
+Model .relu2dc50 mb_size 524288, max_epoch .25.50.150 ResWindow 27, BaseWindow 27, TrainBindN 196862, TrainNoBindN 7374009, BindScaleNo 7461105, NoBindScaleNo 7476433, ScaleInFiles 7906157.000000
+
+Model 7.254019e+06 mb_size 1, max_epoch   ResWindow 5, BaseWindow NNetTypes 1, NNets 1, NTrain 2, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 532178 ThreshVal 0
+
+Accuracy 0.994914+-0.000000, Precision 0.578030+-0.000000, Recall 0.936386+-0.000000, Specificity 0.995315+-0.000000, F1 0.714809+-0.000000, TP 3415.000000+-0.000000, TN 529685.000000+-0.000000, FN 232.000000+-0.000000, FP 2493.000000+-0.000000, AUC 0.000000, TrTime 13285.165585
 >> 

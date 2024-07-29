@@ -40,7 +40,7 @@ folds = foldInFiles * floor((foldInFiles-1)/2);
 
 noBindPerc = 0; %95;
 
-nTrain = 1; %1,5,10,20 real number is nTrain * scaleInFiles 
+nTrain = 2; %1 or 2(more)
 nNets = 1; %5;
 
 
@@ -58,15 +58,16 @@ dataTrIdxFile = 'train.lst';
 
 %%
 ini_rate = 0.001; 
-max_epoch = [floor(25/nTrain), floor(50/nTrain), floor(150/nTrain)]; %* 20; %200
+max_epoch = [floor(25), floor(50), floor(150)]; %* 20; %200
 
 
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
-%cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
+cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = Relu1aClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = Relu1bClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = Relu3aClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
-cNet = Relu3bClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
+%cNet = Relu3bClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
+%cNet = Relu4ClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 
 %cNet = SigClasNet2D(m_in, n_out, ini_rate, max_epoch);
 %cNet = TanhClasNet2D(m_in, n_out, ini_rate, max_epoch(3));
