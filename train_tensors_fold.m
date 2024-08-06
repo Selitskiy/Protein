@@ -550,6 +550,7 @@ for j = 1:nNetTypes
             end
 
             LoopBr = 0;
+            inLoopBr = 0;
             if epochs > 0
                 % Load partially trained model
                 fprintf('Loading %s Net type %d, Net instance %d, Train folds %d %d %d\n', cNetName, j, l, k1, m1, n1);
@@ -557,8 +558,13 @@ for j = 1:nNetTypes
                 cNets{(j-1)*nNets + l, fold} = cNet;
                 m1 = m1 + 1;
                 LoopBr = 1;
+                inLoopBr = 1;
                 if m1 > foldInFiles
                     k1 = k1 + 1;
+                    m1 = k1 + 1;
+                end
+                if k1 > (foldInFiles-1)
+                    k1 = 1;
                     m1 = k1 + 1;
                 end
             else
@@ -580,7 +586,7 @@ for j = 1:nNetTypes
                 %fold = 0;
                 for k = k1:foldInFiles
 
-                    if ~LoopBr
+                    if (~LoopBr) || (~inLoopBr)
                         m1 = k+1;
                     end
                     for m = m1:foldInFiles
@@ -678,6 +684,11 @@ for j = 1:nNetTypes
 
                         cNets{(j-1)*nNets + l, fold} = cNet;
 
+                    end
+
+                    if inLoopBr
+                        inLoopBr = 0;
+                        %m1 = k+1;
                     end
 
                 end

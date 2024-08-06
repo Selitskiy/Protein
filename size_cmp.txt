@@ -107,3 +107,20 @@ Model 7.254019e+06 mb_size 1, max_epoch   ResWindow 5, BaseWindow NNetTypes 1, N
 
 Accuracy 0.994914+-0.000000, Precision 0.577039+-0.000000, Recall 0.946806+-0.000000, Specificity 0.995244+-0.000000, F1 0.717059+-0.000000, TP 3453.000000+-0.000000, TN 529647.000000+-0.000000, FN 194.000000+-0.000000, FP 2531.000000+-0.000000, AUC 0.000000, TrTime 13201.211158
 >> 
+
+
+
+Model .relu2dc50 mb_size 524288, max_epoch .25.50.150 ResWindow 47, BaseWindow 47, TrainBindN 196862, TrainNoBindN 4554327, BindScaleNo 4589663, NoBindScaleNo 4619398, ScaleInFiles 4853953.000000
+
+Model 4.453783e+06 mb_size 1, max_epoch   ResWindow 5, BaseWindow NNetTypes 1, NNets 1, NTrain 2, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.993098+-0.000000, Precision 0.623532+-0.000000, Recall 0.960515+-0.000000, Specificity 0.993466+-0.000000, F1 0.756179+-0.000000, TP 3503.000000+-0.000000, TN 321552.000000+-0.000000, FN 144.000000+-0.000000, FP 2115.000000+-0.000000, AUC 0.000000, TrTime 17963.757604
+>> 
+
+Model .relu2dc50 mb_size 524288, max_epoch .25.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 2, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.993007+-0.000000, Precision 0.615712+-0.000000, Recall 0.990677+-0.000000, Specificity 0.993033+-0.000000, F1 0.759432+-0.000000, TP 3613.000000+-0.000000, TN 321412.000000+-0.000000, FN 34.000000+-0.000000, FP 2255.000000+-0.000000, AUC 0.000000, TrTime 8593.831349
+>> 
