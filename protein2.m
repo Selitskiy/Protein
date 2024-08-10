@@ -12,16 +12,21 @@ addpath('~/Protein/');
 %    reset(gpuDevice(i));
 %end
 
+%conn = apacheCassandra('sielicki','sS543228$','PortNumber',9042);
+%t = tablenames(conn);
+%results = executecql(conn,query);
+%close(conn);
+
 
 %% General config
 
 % Amino residue frame one-side length
-resWindowLen = 13; %13
+resWindowLen = 23; %13
 resWindowWhole = 2*resWindowLen + 1;
 resNum = 26;
 
 % RNA base frame one-side length
-baseWindowLen = 13; %13
+baseWindowLen = 23; %13
 baseWindowWhole = 2*baseWindowLen + 1;
 baseNum = 4;
 
@@ -31,11 +36,11 @@ m_in = mr_in + mb_in;
 
 n_out = 2; % bind or not
 
-bindScaleNo = 1; %1;
+bindScaleNo = 10; %1;
 noBindScaleNo = 0; %50;
 
 %scaleInFiles=2;
-foldInFiles = 5;
+foldInFiles = 6;
 folds = foldInFiles * floor((foldInFiles-1)/2);
 
 noBindPerc = 0; %95;
@@ -58,7 +63,7 @@ dataTrIdxFile = 'train.lst';
 
 %%
 ini_rate = 0.001; 
-max_epoch = [floor(70), floor(50), floor(150)]; %* 20; %200
+max_epoch = [floor(50), floor(50), floor(150)]; %* 20; %200
 
 
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);

@@ -514,13 +514,14 @@ for j = 1:nNetTypes
         %Retrain for Big Data
         else
 
+            randFold = 1;
             fold = 1;
             n1 = 1;
             k1 = 1;
 
             %epochsTarget = 1;
             cNetWC = strcat(dataIdxDir,'/prot.bd.', string(cNet.name), '.', string(cNet.mb_size), '.', string(cNet.max_epoch),...
-                            '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), '.*.*.', ...
+                            '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), '.', ...
                             string(l), '.*.*.*.mat'); % k.m.n.mat in wildcards
 
             cNetFNames = dir(cNetWC);
@@ -536,14 +537,14 @@ for j = 1:nNetTypes
                 epochs = str2num(tokens{5});
                 no_k = str2num(tokens{6});
                 no_m = str2num(tokens{7});
-                l1 = str2num(tokens{11});
-                k1 = str2num(tokens{12});
-                m1 = str2num(tokens{13});
-                n1 = str2num(tokens{14});
+                l1 = str2num(tokens{9});
+                k1 = str2num(tokens{10});
+                m1 = str2num(tokens{11});
+                n1 = str2num(tokens{12});
 
                 cNetName = strcat(dataIdxDir,'/prot.bd.', string(cNet.name), '.', string(cNet.mb_size), '.', string(cNet.max_epoch),...
-                        '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), '.', string(mAllNo(k1)), ...
-                        '.', string(mAllNo(m1)), '.', string(l1), '.', string(k1), '.', string(m1), '.', string(n1), '.mat');
+                        '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes),...
+                        '.', string(l1), '.', string(k1), '.', string(m1), '.', string(n1), '.mat');
                 if ~isfile(cNetName)
                     epochs = -1;
                 end
@@ -566,7 +567,9 @@ for j = 1:nNetTypes
                 if k1 > (foldInFiles-1)
                     k1 = 1;
                     m1 = k1 + 1;
+                    n1 = n1 + 1;
                 end
+
             else
                 % Resets weights
                 cNet = cNet.Create();
@@ -591,13 +594,32 @@ for j = 1:nNetTypes
                     end
                     for m = m1:foldInFiles
 
+                        if randFold
+                            while true
+                                kr = floor(rand()*foldInFiles)+1;
+                                if kr <=  foldInFiles
+                                    break;
+                                end
+                            end
+
+                            while true
+                                mr = floor(rand()*foldInFiles)+1;
+                                if (mr <=  foldInFiles) && (mr ~= kr)
+                                    break;
+                                end
+                            end
+                        else
+                            kr = k;
+                            mr = m;
+                        end
+
                         %fold = 1;
                         cNetNameNew = strcat(dataIdxDir,'/prot.bd.', string(cNet.name), '.', string(cNet.mb_size), '.', string(cNet.max_epoch),...
-                                    '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), '.', string(mAllNo(k)), ...
-                                    '.', string(mAllNo(m)), '.', string(l), '.', string(k), '.', string(m), '.', string(n), '.mat');
+                                    '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), ...
+                                    '.', string(l), '.', string(k), '.', string(m), '.', string(n), '.mat');
 
 
-                        mWhole = mAllYes + mAllNo(k) + mAllNo(m);
+                        mWhole = mAllYes + mAllNo(kr) + mAllNo(mr);
 
                         trMX = zeros([mWhole, m_in]);
                         trMY = categorical(zeros([mWhole, 1]));
@@ -610,40 +632,40 @@ for j = 1:nNetTypes
 
 
                         dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
-                                        '.', string(mAllNo(k)), '.', string(k), '.', string(foldInFiles), '.mat');
+                                        '.', string(mAllNo(kr)), '.', string(kr), '.', string(foldInFiles), '.mat');
 
-                        fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
+                        fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, kr, mr);
 
 
                         load(dataTrNoBindFN, 'trNoBindM');
 
-                        trNoBindY = categorical(zeros([mAllNo(k), 1]));
+                        trNoBindY = categorical(zeros([mAllNo(kr), 1]));
 
-                        trMX(mAllYes+1:mAllYes+mAllNo(k),:) = trNoBindM;
-                        trMY(mAllYes+1:mAllYes+mAllNo(k),:) = trNoBindY;
+                        trMX(mAllYes+1:mAllYes+mAllNo(kr),:) = trNoBindM;
+                        trMY(mAllYes+1:mAllYes+mAllNo(kr),:) = trNoBindY;
 
                         clear("trNoBindM");
 
 
                         dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
-                                        '.', string(mAllNo(m)), '.', string(m), '.', string(foldInFiles), '.mat');
+                                        '.', string(mAllNo(mr)), '.', string(mr), '.', string(foldInFiles), '.mat');
 
-                        fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
+                        fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, kr, mr);
 
 
                         load(dataTrNoBindFN, 'trNoBindM');
 
-                        trNoBindY = categorical(zeros([mAllNo(m), 1]));
+                        trNoBindY = categorical(zeros([mAllNo(mr), 1]));
 
-                        trMX(mAllYes+mAllNo(k)+1:end,:) = trNoBindM;
-                        trMY(mAllYes+mAllNo(k)+1:end,:) = trNoBindY;      
+                        trMX(mAllYes+mAllNo(kr)+1:end,:) = trNoBindM;
+                        trMY(mAllYes+mAllNo(kr)+1:end,:) = trNoBindY;      
 
                         clear("trNoBindM");                    
                         clear("trNoBindY");
 
 
 
-                        fprintf('Training Net type %d, Net instance %d, Train folds %d %d %d\n', j, l, k, m, n);
+                        fprintf('Training Net type %d, Net instance %d, Train folds %d %d (%d %d) %d\n', j, l, k, m, kr, mr, n);
                     
 
                         % GPU on
@@ -668,7 +690,7 @@ for j = 1:nNetTypes
 
                         %cNet.max_epoch = epochsTarget;
 
-                        fprintf('Saving %s Net type %d, Net instance %d, Train folds %d %d %d\n', cNetNameNew, j, l, k, m, n);
+                        fprintf('Saving %s Net type %d, Net instance %d, Train folds %d %d (%d %d) %d\n', cNetNameNew, j, l, k, m, kr, mr, n);
                         save(cNetNameNew, 'cNet');
 
                         if exist('cNetName','var')
