@@ -1,10 +1,34 @@
 function [cNets, mAllYes, mAllNo, Xcontr, Ycontr, Ncontr, t1, t2, noBindThresh] = train_tensors_fold(cNetTypes, nNets, nTrain, dataIdxDir, dataTrIdxFile, m_in, ...
-    resWindowLen, resWindowWhole, resNum, baseWindowLen, baseWindowWhole, baseNum, bindScaleNo, noBindScaleNo, foldInFiles, noBindPerc)
+    resWindowLen, resWindowWhole, resNum, baseWindowLen, baseWindowWhole, baseNum, bindScaleNo, noBindScaleNo, foldInFiles, noBindPerc, useDB)
 
 dataTrIdxFN = strcat(dataIdxDir,'/',dataTrIdxFile);
 
 trIdxM = readmatrix(dataTrIdxFN, FileType='text', OutputType='string', Delimiter=' ');
 [n, ~] = size(trIdxM);
+
+dbLoaded = 1;
+dbBuff = 200000;
+
+if useDB
+    conn = apacheCassandra('sielicki','sS543228$','PortNumber',9042);
+
+    query2 = 'USE protein;';
+    results = executecql(conn, query2);
+
+    tableName = strcat('noBind_', string(resWindowWhole), '_', string(baseWindowWhole));
+    insTpl = strcat("INSERT INTO ", tableName, " (pk");
+
+    %for i = 1:resWindowWhole
+    %    insTpl = strcat(insTpl, ", r", string(i));
+    %end
+
+    %for i = 1:baseWindowWhole
+    %    insTpl = strcat(insTpl, ", b", string(i));
+    %end
+
+    insTpl = strcat(insTpl, ", val) ");
+    %insTpl = strcat(insTpl, ") ");
+end
 
 
 % Count all residue-base pairs
@@ -72,6 +96,8 @@ end
 
 mAllNo = zeros([foldInFiles,1]);
 offFolds = 0;
+mCurAll = 1;
+mCurAllc = 1;
 for f = 1:foldInFiles
 
     mNone = 0;
@@ -140,6 +166,7 @@ for f = 1:foldInFiles
 
                 for b = 1:upBound
                     mCur = mCur + 1;
+                    mCurAllc = mCurAllc + 1;
                 end
             end
             if (lowBound >= 0) && (lowBound <= base_len)
@@ -147,6 +174,7 @@ for f = 1:foldInFiles
 
                 for b = lowBound:base_len
                     mCur = mCur + 1;
+                    mCurAllc = mCurAllc + 1;
                 end
             end
             % no binds for a given residue
@@ -155,6 +183,7 @@ for f = 1:foldInFiles
 
                 for b = 1:base_len
                     mCur = mCur + 1;
+                    mCurAllc = mCurAllc + 1;
                 end
             end
 
@@ -178,17 +207,28 @@ for f = 1:foldInFiles
         mAllYes = mAll;
     end
 
+
     dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
                     '.', string(mAllNo(f)), '.', string(f), '.', string(foldInFiles), '.mat');
 
-    if isfile(dataTrNoBindFN)
-        fprintf('Found %s- dat: %d fold slice %d\n', dataTrNoBindFN, i, f);
+    %if isfile(dataTrNoBindFN)
+    %    if ~useDB
+    %     fprintf('Found %s- dat: %d fold slice %d\n', dataTrNoBindFN, i, f);
 
-        %load(dataTrNoBindFN, 'trNoBindM');
-    else
+         % DEBUG!!! Not needed, will load later
+    %     %load(dataTrNoBindFN, 'trNoBindM');
+    %    end
+    %else
 
     %trNoBindM = zeros([mNone, m_in]);
-    trNoBindM = zeros([mCur-1, m_in]);
+    if ~useDB
+        trNoBindM = zeros([mCur-1, m_in]);
+    else
+        sl0 = zeros([1, m_in]);
+    end
+
+
+    if ~dbLoaded
 
     %% Loading all no bind residue-base pairs
     mCur = 1;
@@ -251,21 +291,68 @@ for f = 1:foldInFiles
 
             if upBound >= 0
                 for b = 1:upBound
-                    trNoBindM(mCur,:) = bind_1hot(resFaM, baseFaM, trNoBindM(mCur,:), resWindowLen, resWindowWhole, baseWindowLen, resNum, baseNum, r-1, b-1, mCur);
+
+                    if ~useDB
+                        trNoBindM(mCur,:) = bind_1hot(resFaM, baseFaM, trNoBindM(mCur,:), resWindowLen, resWindowWhole, baseWindowLen, resNum, baseNum, r-1, b-1, mCur);
+                    else
+                        query4 = strcat(insTpl, " VALUES(");
+
+                        sl = bind_1hot(resFaM, baseFaM, sl0, resWindowLen, resWindowWhole, baseWindowLen, resNum, baseNum, r-1, b-1, mCur);
+                        sls = string(sl);
+                        stst = strjoin(sls);
+                        
+                        query4 = strcat(query4, string(mCurAll), ", '", stst, "');");
+                        results = executecql(conn, query4);
+                        %x = str2num(stst);
+                    end
+                    
                     mCur = mCur + 1;
+                    mCurAll = mCurAll + 1;
                 end
             end
             if (lowBound >= 0) && (lowBound <= base_len)
                 for b = lowBound:base_len
-                    trNoBindM(mCur,:) = bind_1hot(resFaM, baseFaM, trNoBindM(mCur,:), resWindowLen, resWindowWhole, baseWindowLen, resNum, baseNum, r-1, b-1, mCur);
+
+                    if ~useDB
+                        trNoBindM(mCur,:) = bind_1hot(resFaM, baseFaM, trNoBindM(mCur,:), resWindowLen, resWindowWhole, baseWindowLen, resNum, baseNum, r-1, b-1, mCur);
+                    else
+                        query4 = strcat(insTpl, " VALUES(");
+
+                        sl = bind_1hot(resFaM, baseFaM, sl0, resWindowLen, resWindowWhole, baseWindowLen, resNum, baseNum, r-1, b-1, mCur);
+                        sls = string(sl);
+                        stst = strjoin(sls);
+                        
+                        query4 = strcat(query4, string(mCurAll), ", '", stst, "');");
+                        results = executecql(conn, query4);
+                        %x = str2num(stst);
+                    end
+
+                    
                     mCur = mCur + 1;
+                    mCurAll = mCurAll + 1;
                 end
             end
             % no binds for a given residue
             if (upBound < 0) && (lowBound < 0)
                 for b = 1:base_len
-                    trNoBindM(mCur,:) = bind_1hot(resFaM, baseFaM, trNoBindM(mCur,:), resWindowLen, resWindowWhole, baseWindowLen, resNum, baseNum, r-1, b-1, mCur);
+
+                    if ~useDB
+                        trNoBindM(mCur,:) = bind_1hot(resFaM, baseFaM, trNoBindM(mCur,:), resWindowLen, resWindowWhole, baseWindowLen, resNum, baseNum, r-1, b-1, mCur);
+                    else
+                        query4 = strcat(insTpl, " VALUES(");
+
+                        sl = bind_1hot(resFaM, baseFaM, sl0, resWindowLen, resWindowWhole, baseWindowLen, resNum, baseNum, r-1, b-1, mCur);
+                        sls = string(sl);
+                        stst = strjoin(sls);
+                        
+                        query4 = strcat(query4, string(mCurAll), ", '", stst, "');");
+                        results = executecql(conn, query4);
+                        %x = str2num(stst);
+                    end
+
+
                     mCur = mCur + 1;
+                    mCurAll = mCurAll + 1;
                 end
             end
 
@@ -274,31 +361,24 @@ for f = 1:foldInFiles
         fprintf('Building %s- dat: %d/%d fold slice %d\n', dataTrIdxFile, offFolds+i, n, f);
     end
 
-    %if noBindScaleNo
-    %    mAllNo = floor(mAll*noBindScaleNo);
-    %else
-    %    mAllNo = mCur;
-    %end
 
-    %if bindScaleNo
-    %    mAllYes = floor(mAll*bindScaleNo);
-    %else
-    %    mAllYes = mAll;
-    %end
+    if ~useDB
+        % Save fold slice of the non-bind data to save space
+        dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
+                    '.', string(mAllNo(f)), '.', string(f), '.', string(foldInFiles), '.mat');
 
-    % Save fold slice of the non-bind data to save space
-    dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
-        '.', string(mAllNo(f)), '.', string(f), '.', string(foldInFiles), '.mat');
+        if ~isfile(dataTrNoBindFN)
+            fprintf('Saving %s- dat: %d fold slice %d\n', dataTrNoBindFN, i, f);
 
-    if ~isfile(dataTrNoBindFN)
-        fprintf('Saving %s- dat: %d fold slice %d\n', dataTrNoBindFN, i, f);
+            save(dataTrNoBindFN, 'trNoBindM');
+        end
 
-        save(dataTrNoBindFN, 'trNoBindM');
+        clear("trNoBindM");
     end
 
-    clear("trNoBindM");
+    end %dbLoaded
 
-    end
+    %end % Load/No load data slice
 
 
     offFolds = offFolds + ns;
@@ -363,14 +443,20 @@ for j = 1:nNetTypes
     % Sets new current model in heterogenious model list
     cNet = cNetTypes{j};
 
+    mWhole = mAllYes + mAllNo(1)*2;
+    cNet.mb_size = 2^floor(log2(mWhole)-4);
+
     %Number of retrains on Big Data (not fitting into memory
     if nTrain ~= 1
         epochsTarget = 1;
-        nReTrain = floor(cNet.max_epoch/(foldInFiles-1)/epochsTarget);
+        if foldInFiles ~= 1
+            nReTrain = floor(cNet.max_epoch/(foldInFiles-1)/epochsTarget);
+        else
+            nReTrain = floor(((mCurAllc-1) / cNet.mb_size * cNet.max_epoch));
+        end
     end
 
-    mWhole = mAllYes + mAllNo(1)*2;
-    cNet.mb_size = 2^floor(log2(mWhole)-4);
+
 
     %Number of Nets of the same type in ensemble
     for l = 1:nNets
@@ -439,40 +525,52 @@ for j = 1:nNetTypes
                     end
 
 
-                    dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
-                    '.', string(mAllNo(k)), '.', string(k), '.', string(foldInFiles), '.mat');
+                    %% No bind data load
+                    if ~useDB
+                        dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
+                                    '.', string(mAllNo(k)), '.', string(k), '.', string(foldInFiles), '.mat');
 
-                    fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
-
-
-                    load(dataTrNoBindFN, 'trNoBindM');
-
-                    trNoBindY = categorical(zeros([mAllNo(k), 1]));
-
-                    trMX(mAllYes+1:mAllYes+mAllNo(k),:) = trNoBindM;
-                    trMY(mAllYes+1:mAllYes+mAllNo(k),:) = trNoBindY;
-
-                    clear("trNoBindM");
+                        fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
 
 
-                    dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
-                    '.', string(mAllNo(m)), '.', string(m), '.', string(foldInFiles), '.mat');
+                        load(dataTrNoBindFN, 'trNoBindM');
 
-                    fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
+                        trNoBindY = categorical(zeros([mAllNo(k), 1]));
 
+                        trMX(mAllYes+1:mAllYes+mAllNo(k),:) = trNoBindM;
+                        trMY(mAllYes+1:mAllYes+mAllNo(k),:) = trNoBindY;
 
-                    load(dataTrNoBindFN, 'trNoBindM');
-
-                    trNoBindY = categorical(zeros([mAllNo(m), 1]));
-
-                    trMX(mAllYes+mAllNo(k)+1:end,:) = trNoBindM;
-                    trMY(mAllYes+mAllNo(k)+1:end,:) = trNoBindY;      
-
-                    clear("trNoBindM");                    
-                    clear("trNoBindY");
+                        clear("trNoBindM");
 
 
+                        dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
+                                    '.', string(mAllNo(m)), '.', string(m), '.', string(foldInFiles), '.mat');
 
+                        fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, k, m);
+
+
+                        load(dataTrNoBindFN, 'trNoBindM');
+
+                        trNoBindY = categorical(zeros([mAllNo(m), 1]));
+
+                        trMX(mAllYes+mAllNo(k)+1:end,:) = trNoBindM;
+                        trMY(mAllYes+mAllNo(k)+1:end,:) = trNoBindY;      
+
+                        clear("trNoBindM");                    
+                        clear("trNoBindY");
+                    else
+                            selTpl = strcat("SELECT val FROM ", tableName, " WHERE pk IN (");
+
+                            pn = randperm(mCurAllc-1, cNet.mb_size);
+                            ps = string(pn);
+                            pst = strjoin(ps, ", ");
+                            selTpl = strcat(selTpl, pst);
+
+                            query5 = strcat(selTpl, ");");
+                            results = executecql(conn, query5);
+                    end
+
+                    %% Training
                     fprintf('Training Net type %d, Net instance %d, Train folds %d %d\n', j, l, k, m);
                     
 
@@ -513,6 +611,21 @@ for j = 1:nNetTypes
 
         %Retrain for Big Data
         else
+
+            %DEBUG!!!
+                            %selTpl = strcat("SELECT val FROM ", tableName, " WHERE pk IN (");
+
+                            %pn = randperm(mCurAllc-1, 200000); %cNet.mb_size);
+                            %ps = string(pn);
+                            %pst = strjoin(ps, ", ");
+                            %selTpl = strcat(selTpl, pst);
+
+                            %query5 = strcat(selTpl, ");");
+                            %results = executecql(conn, query5); %10x1
+
+
+
+
 
             randFold = 1;
             fold = 1;
@@ -619,7 +732,16 @@ for j = 1:nNetTypes
                                     '.', string(l), '.', string(k), '.', string(m), '.', string(n), '.mat');
 
 
-                        mWhole = mAllYes + mAllNo(kr) + mAllNo(mr);
+                        if ~useDB
+                            mWhole = mAllYes + mAllNo(kr) + mAllNo(mr);
+                        else
+                            kBuff = floor(mAllNo(kr) / dbBuff);
+                            mAllNoBuffK = kBuff * dbBuff;
+                            mBuff = floor(mAllNo(mr) / dbBuff);
+                            mAllNoBuffM = mBuff * dbBuff;
+                            mWhole = mAllYes + mAllNoBuffK + mAllNoBuffM;
+                        end
+
 
                         trMX = zeros([mWhole, m_in]);
                         trMY = categorical(zeros([mWhole, 1]));
@@ -631,37 +753,103 @@ for j = 1:nNetTypes
                         end
 
 
-                        dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
+                        %% No binnd load
+                        if ~useDB
+                            dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
                                         '.', string(mAllNo(kr)), '.', string(kr), '.', string(foldInFiles), '.mat');
 
-                        fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, kr, mr);
+                            fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, kr, mr);
 
 
-                        load(dataTrNoBindFN, 'trNoBindM');
+                            load(dataTrNoBindFN, 'trNoBindM');
 
-                        trNoBindY = categorical(zeros([mAllNo(kr), 1]));
+                            trNoBindY = categorical(zeros([mAllNo(kr), 1]));
 
-                        trMX(mAllYes+1:mAllYes+mAllNo(kr),:) = trNoBindM;
-                        trMY(mAllYes+1:mAllYes+mAllNo(kr),:) = trNoBindY;
+                            trMX(mAllYes+1:mAllYes+mAllNo(kr),:) = trNoBindM;
+                            trMY(mAllYes+1:mAllYes+mAllNo(kr),:) = trNoBindY;
 
-                        clear("trNoBindM");
+                            clear("trNoBindM");
 
 
-                        dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
+                            dataTrNoBindFN = strcat(dataIdxDir,'/',dataTrIdxFile, '.nobind.fs.', string(resWindowLen), '.', string(baseWindowLen),...
                                         '.', string(mAllNo(mr)), '.', string(mr), '.', string(foldInFiles), '.mat');
 
-                        fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, kr, mr);
+                            fprintf('Loading %s- dat: fold slice %d %d\n', dataTrNoBindFN, kr, mr);
 
 
-                        load(dataTrNoBindFN, 'trNoBindM');
+                            load(dataTrNoBindFN, 'trNoBindM');
 
-                        trNoBindY = categorical(zeros([mAllNo(mr), 1]));
+                            trNoBindY = categorical(zeros([mAllNo(mr), 1]));
 
-                        trMX(mAllYes+mAllNo(kr)+1:end,:) = trNoBindM;
-                        trMY(mAllYes+mAllNo(kr)+1:end,:) = trNoBindY;      
+                            trMX(mAllYes+mAllNo(kr)+1:end,:) = trNoBindM;
+                            trMY(mAllYes+mAllNo(kr)+1:end,:) = trNoBindY;      
 
-                        clear("trNoBindM");                    
-                        clear("trNoBindY");
+                            clear("trNoBindM");                    
+                            clear("trNoBindY");
+                        else
+                               
+                            fprintf('Loading DB- dat: fold slice %d %d\n', kr, mr);
+
+                            selTpl = strcat("SELECT val FROM ", tableName, " WHERE pk IN (");
+
+                            for i=1:kBuff
+
+                                pn = randperm(mCurAllc-1, dbBuff);
+                                ps = string(pn);
+                                pst = strjoin(ps, ", ");
+                                query5 = strcat(selTpl, pst);
+
+                                query5 = strcat(query5, ");");
+                                results = executecql(conn, query5);
+
+                                
+                                fprintf('Loading DB- dat k: fold slice %d %d %d\n', kr, mr, i);
+
+                                x = zeros([dbBuff, m_in]);
+                                parfor ii=1:dbBuff
+                                    x(ii,:) = str2num(results(ii,1).Variables);
+                                    %trMX(mAllYes+ii+(i-1)*dbBuff,:) = str2num(results(ii,1).Variables);
+                                end
+                                trMX(mAllYes+1+(i-1)*dbBuff:mAllYes+i*dbBuff,:) = x;
+                                %trMX(mAllYes+1+(i-1)*dbBuff:mAllYes+i*dbBuff,:) = str2double(split(results.Variables));
+                            end
+
+                            trMY(mAllYes+1:mAllYes+mAllNoBuffK,:) = categorical(zeros([mAllNoBuffK, 1]));
+
+
+
+                            for i=1:mBuff
+
+                                pn = randperm(mCurAllc-1, dbBuff);
+                                ps = string(pn);
+                                pst = strjoin(ps, ", ");
+                                query5 = strcat(selTpl, pst);
+
+                                query5 = strcat(query5, ");");
+                                results = executecql(conn, query5);
+
+                                
+                                fprintf('Loading DB- dat m: fold slice %d %d %d\n', kr, mr, i);
+
+                                x = zeros([dbBuff, m_in]);
+                                parfor ii=1:dbBuff
+                                    x(ii,:) = str2num(results(ii,1).Variables);
+                                    %trMX(mAllYes+mAllNoBuffK+ii+(i-1)*dbBuff,:) = str2num(results(ii,1).Variables);
+                                end
+                                trMX(mAllYes+mAllNoBuffK+1+(i-1)*dbBuff:mAllYes+mAllNoBuffK+i*dbBuff,:) = x;
+                                %trMX(mAllYes+mAllNoBuffK+1+(i-1)*dbBuff:mAllYes+mAllNoBuffK+i*dbBuff,:) = str2double(split(results.Variables));
+                            end
+
+                            trMY(mAllYes+mAllNoBuffK+1:end,:) = categorical(zeros([mAllNoBuffM, 1]));
+
+                            clear("results");
+                            clear("pn");
+                            clear("ps");
+                            clear("pst");
+                            clear("query5");
+                            clear("x");
+
+                        end
 
 
 

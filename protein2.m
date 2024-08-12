@@ -12,10 +12,8 @@ addpath('~/Protein/');
 %    reset(gpuDevice(i));
 %end
 
-%conn = apacheCassandra('sielicki','sS543228$','PortNumber',9042);
-%t = tablenames(conn);
-%results = executecql(conn,query);
-%close(conn);
+useDB = 1;
+
 
 
 %% General config
@@ -29,6 +27,35 @@ resNum = 26;
 baseWindowLen = 23; %13
 baseWindowWhole = 2*baseWindowLen + 1;
 baseNum = 4;
+
+
+if useDB
+    conn = apacheCassandra('sielicki','sS543228$','PortNumber',9042);
+    %t = tablenames(conn);
+    query1 = "CREATE KEYSPACE IF NOT EXISTS protein WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};";
+    results = executecql(conn, query1);
+
+    query2 = 'USE protein;';
+    results = executecql(conn, query2);
+
+    tableName = strcat('noBind_', string(resWindowWhole), '_', string(baseWindowWhole));
+    query3 = strcat("CREATE TABLE IF NOT EXISTS ", tableName, " (pk int");
+
+    %for i = 1:resWindowWhole
+    %    query3 = strcat(query3, ", r", string(i), " int");
+    %end
+
+    %for i = 1:baseWindowWhole
+    %    query3 = strcat(query3, ", b", string(i), " int");
+    %end
+
+    query3 = strcat(query3, ", val ascii");
+
+    query3 = strcat(query3, ", PRIMARY KEY (pk));");
+    results = executecql(conn, query3);
+    close(conn);
+end
+
 
 mr_in = resNum * resWindowWhole;
 mb_in = baseNum * baseWindowWhole;
@@ -45,7 +72,7 @@ folds = foldInFiles * floor((foldInFiles-1)/2);
 
 noBindPerc = 0; %95;
 
-nTrain = 2; %1 or 2(more)
+nTrain = 1000; %1 or 1000(more)
 nNets = 1; %5;
 
 
@@ -63,7 +90,7 @@ dataTrIdxFile = 'train.lst';
 
 %%
 ini_rate = 0.001; 
-max_epoch = [floor(50), floor(50), floor(150)]; %* 20; %200
+max_epoch = [floor(25), floor(50), floor(150)]; %* 20; %200
 
 
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
@@ -100,7 +127,7 @@ end
 
 
 [cNets, mTrBind, mTrNoBind, Xcontr, Ycontr, Ncontr, t1, t2, noBindThresh] = train_tensors_fold(cNetTypes, nNets, nTrain, dataIdxDir, dataTrIdxFile, m_in, resWindowLen, resWindowWhole, resNum,... 
-    baseWindowLen, baseWindowWhole, baseNum, bindScaleNo, noBindScaleNo, foldInFiles, noBindPerc);
+    baseWindowLen, baseWindowWhole, baseNum, bindScaleNo, noBindScaleNo, foldInFiles, noBindPerc, useDB);
 
 [nNets, ~] = size(cNets);
 
