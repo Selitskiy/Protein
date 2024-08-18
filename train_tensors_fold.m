@@ -6,8 +6,10 @@ dataTrIdxFN = strcat(dataIdxDir,'/',dataTrIdxFile);
 trIdxM = readmatrix(dataTrIdxFN, FileType='text', OutputType='string', Delimiter=' ');
 [n, ~] = size(trIdxM);
 
+randFold = 1; %1;
 dbLoaded = 1;
 dbBuff = 200000;
+epochsIni = -1;
 
 if useDB
     conn = apacheCassandra('sielicki','sS543228$','PortNumber',9042);
@@ -627,7 +629,7 @@ for j = 1:nNetTypes
 
 
 
-            randFold = 1;
+
             fold = 1;
             n1 = 1;
             k1 = 1;
@@ -648,6 +650,7 @@ for j = 1:nNetTypes
                 cNetNameLoad = cNetNames(1,:);
                 tokens = split(cNetNameLoad,'.');
                 epochs = str2num(tokens{5});
+                epochsIni = epochs;
                 no_k = str2num(tokens{6});
                 no_m = str2num(tokens{7});
                 l1 = str2num(tokens{9});
@@ -669,6 +672,7 @@ for j = 1:nNetTypes
                 % Load partially trained model
                 fprintf('Loading %s Net type %d, Net instance %d, Train folds %d %d %d\n', cNetName, j, l, k1, m1, n1);
                 load(cNetName, 'cNet');
+                cNet.max_epoch = epochs;
                 cNets{(j-1)*nNets + l, fold} = cNet;
                 m1 = m1 + 1;
                 LoopBr = 1;
@@ -730,7 +734,6 @@ for j = 1:nNetTypes
                         cNetNameNew = strcat(dataIdxDir,'/prot.bd.', string(cNet.name), '.', string(cNet.mb_size), '.', string(cNet.max_epoch),...
                                     '.', string(resWindowLen), '.', string(baseWindowLen), '.', string(mAllYes), ...
                                     '.', string(l), '.', string(k), '.', string(m), '.', string(n), '.mat');
-
 
                         if ~useDB
                             mWhole = mAllYes + mAllNo(kr) + mAllNo(mr);
@@ -882,7 +885,7 @@ for j = 1:nNetTypes
                         save(cNetNameNew, 'cNet');
 
                         if exist('cNetName','var')
-                            fprintf('Deleting %s Net type %d, Net instance %d, Train folds %d %d %d\n', cNetName, j, l, k1, m1, n1);
+                            fprintf('Deleting %s Net type %d, Net instance %d, Initial train folds %d %d %d\n', cNetName, j, l, k1, m1, n1);
                             delete(cNetName);
                         end
                         %Save old name

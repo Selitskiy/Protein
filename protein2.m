@@ -12,7 +12,7 @@ addpath('~/Protein/');
 %    reset(gpuDevice(i));
 %end
 
-useDB = 1;
+useDB = 1; %1;
 
 
 
@@ -73,7 +73,7 @@ folds = foldInFiles * floor((foldInFiles-1)/2);
 noBindPerc = 0; %95;
 
 nTrain = 1000; %1 or 1000(more)
-nNets = 1; %5;
+nNets = 3; %1; %5;
 
 
 
@@ -90,7 +90,7 @@ dataTrIdxFile = 'train.lst';
 
 %%
 ini_rate = 0.001; 
-max_epoch = [floor(25), floor(50), floor(150)]; %* 20; %200
+max_epoch = [floor(50), floor(50), floor(150)]; %* 20; %200
 
 
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
