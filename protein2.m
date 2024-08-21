@@ -73,7 +73,7 @@ folds = foldInFiles * floor((foldInFiles-1)/2);
 noBindPerc = 0; %95;
 
 nTrain = 1000; %1 or 1000(more)
-nNets = 3; %1; %5;
+nNets = 1; %5;
 
 
 
@@ -90,7 +90,7 @@ dataTrIdxFile = 'train.lst';
 
 %%
 ini_rate = 0.001; 
-max_epoch = [floor(50), floor(50), floor(150)]; %* 20; %200
+max_epoch = [floor(120), floor(50), floor(150)]; %* 20; %200
 
 
 %cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
@@ -120,7 +120,7 @@ cNetTypes{1} = cNet;
 %cNetTypes{3} = cNet3;
 
 if nNets*nNetTypes > 1
-    threshVal = floor(nNets*nNetTypes/2) + 1;
+    threshVal = nNets*nNetTypes; %floor(nNets*nNetTypes/2) + 1; %all majority
 else
     threshVal = 0;
 end
