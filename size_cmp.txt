@@ -202,6 +202,14 @@ Model 3.925021e+06 mb_size 3746315, max_epoch
 Accuracy 0.993841+-0.000000, Precision 0.646016+-0.000000, Recall 0.989306+-0.000000, Specificity 0.993892+-0.000000, F1 0.781629+-0.000000, TP 3608.000000+-0.000000, TN 321690.000000+-0.000000, FN 39.000000+-0.000000, FP 1977.000000+-0.000000, AUC 0.000000, TrTime 39630.342698
 >> 
 
+Model .relu2dc50 mb_size 524288, max_epoch .120.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.993303+-0.000000, Precision 0.626018+-0.000000, Recall 0.990951+-0.000000, Specificity 0.993330+-0.000000, F1 0.767304+-0.000000, TP 3614.000000+-0.000000, TN 321508.000000+-0.000000, FN 33.000000+-0.000000, FP 2159.000000+-0.000000, AUC 0.000000, TrTime 67426.376986
+>> 
+
 
 
 Cassandra Ensemble majority
@@ -229,5 +237,13 @@ Model 3.925021e+06 mb_size 3746315, max_epoch
  ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 4, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 4
 
 Accuracy 0.994953+-0.000000, Precision 0.690544+-0.000000, Recall 0.991226+-0.000000, Specificity 0.994995+-0.000000, F1 0.814006+-0.000000, TP 3615.000000+-0.000000, TN 322047.000000+-0.000000, FN 32.000000+-0.000000, FP 1620.000000+-0.000000, AUC 0.000000, TrTime 1.807819
+>> 
+
+Model .relu2dc50 mb_size 524288, max_epoch .50.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 5, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 5
+
+Accuracy 0.995002+-0.000000, Precision 0.692661+-0.000000, Recall 0.991226+-0.000000, Specificity 0.995044+-0.000000, F1 0.815475+-0.000000, TP 3615.000000+-0.000000, TN 322063.000000+-0.000000, FN 32.000000+-0.000000, FP 1604.000000+-0.000000, AUC 0.000000, TrTime 2.032135
 >> 
 
