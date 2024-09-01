@@ -91,24 +91,24 @@ for l = 1:nNets
         reset(gpuDevice(1));
 
         cNet = cNets{l,f};
-        [~, bindY(:,f), bindA(:,:,f)] = cNet.Predict(bindX);
+        [~, bindY(:,l,f), bindA(:,:,l,f)] = cNet.Predict(bindX);
 
         % GPU off
         delete(gcp('nocreate'));
         gpuDevice([]);
 
 
-        TPIdx = (bindYh == bindY(:,f));
+        TPIdx = (bindYh == bindY(:,l,f));
         %FNIdx = (bindYh ~= bindY(:,f));
         FNIdx = ~TPIdx;
 
         nTP = sum(TPIdx);
-        meanActTP = sum(bindA(TPIdx,2,f))/nTP;
-        sigActTP = std(bindA(TPIdx,2,f));
+        meanActTP = sum(bindA(TPIdx,2,l,f))/nTP;
+        sigActTP = std(bindA(TPIdx,2,l,f));
 
         nFN = sum(FNIdx);
-        meanActFN = sum(bindA(FNIdx,1,f))/nFN;
-        sigActFN = std(bindA(FNIdx,1,f));
+        meanActFN = sum(bindA(FNIdx,1,l,f))/nFN;
+        sigActFN = std(bindA(FNIdx,1,l,f));
 
 
         for ll = 1:nThresh
@@ -337,59 +337,59 @@ for i = 1:ns
         for l = 1:nNets
             for f = 1:nFolds
 
-            fprintf('Predicting no-bind Net %d %d\n', l, f);
+                fprintf('Predicting no-bind Net %d %d\n', l, f);
 
-            % GPU on
-            gpuDevice(1);
-            reset(gpuDevice(1));
+                % GPU on
+                gpuDevice(1);
+                reset(gpuDevice(1));
 
-            cNet = cNets{l,f};
-            [~, noBindY(:,f), noBindA(:,:,f)] = cNet.Predict(noBindX);
+                cNet = cNets{l,f};
+                [~, noBindY(:,f), noBindA(:,:,f)] = cNet.Predict(noBindX);
     
-            % GPU off
-            delete(gcp('nocreate'));
-            gpuDevice([]);
+                % GPU off
+                delete(gcp('nocreate'));
+                gpuDevice([]);
 
-            TNIdx = noBindYh(1:mCur) == noBindY(1:mCur,f);
-            %TNIdx = TNIdx & (noBindYh(1:mCur) == noBindY(1:mCur,f));
-            %FPIdx = FPIdx & (noBindYh(1:mCur) ~= noBindY(1:mCur,f));
-            FPIdx = ~TNIdx;
+                TNIdx = noBindYh(1:mCur) == noBindY(1:mCur, f);
+                %TNIdx = TNIdx & (noBindYh(1:mCur) == noBindY(1:mCur,f));
+                %FPIdx = FPIdx & (noBindYh(1:mCur) ~= noBindY(1:mCur,f));
+                FPIdx = ~TNIdx;
 
-            nTNcur = sum(TNIdx);
-            sumActTNcur = sum(noBindA(TNIdx,1,f));
+                nTNcur = sum(TNIdx);
+                sumActTNcur = sum(noBindA(TNIdx,1,f));
 
-            nFPcur = sum(FPIdx);
-            sumActFPcur = sum(noBindA(FPIdx,2,f));
+                nFPcur = sum(FPIdx);
+                sumActFPcur = sum(noBindA(FPIdx,2,f));
 
-            nTN = nTNold + nTNcur;
-            sumActTN = (sumActTNold + sumActTNcur);
-            meanActTN = sumActTN / nTN;
+                nTN = nTNold + nTNcur;
+                sumActTN = (sumActTNold + sumActTNcur);
+                meanActTN = sumActTN / nTN;
 
-            nFP = nFPold + nFPcur;
-            sumActFP = (sumActFPold + sumActFPcur);
-            meanActFP = sumActFP / nFP;
-
-
-            nTNold = nTN;
-            sumActTNold = sumActTN;
-            nFPold = nFP;
-            sumActFPold = sumActFP;
+                nFP = nFPold + nFPcur;
+                sumActFP = (sumActFPold + sumActFPcur);
+                meanActFP = sumActFP / nFP;
 
 
-            for ll = 1:nThresh
+                nTNold = nTN;
+                sumActTNold = sumActTN;
+                nFPold = nFP;
+                sumActFPold = sumActFP;
 
-                if sumThresh
-                    FPIdxCond(:,f,ll) = FPIdxCond(:,f,ll) & (noBindA(1:mCur,2,f) >= threshP(l,ll));
-                    FPIdxSum(:,f,ll) = FPIdxSum(:,f,ll) + (noBindA(1:mCur,2,f) >= threshP(l,ll));
-                else
-                    FPIdxCond(:,f,ll) = FPIdxCond(:,f,ll) & (noBindYh(1:mCur) ~= noBindY(1:mCur,f));
-                    FPIdxSum(:,f,ll) = FPIdxSum(:,f,ll) + (noBindYh(1:mCur) ~= noBindY(1:mCur,f));
+
+                for ll = 1:nThresh
+
+                    if sumThresh
+                        FPIdxCond(:,f,ll) = FPIdxCond(:,f,ll) & (noBindA(1:mCur,2,f) >= threshP(l,ll));
+                        FPIdxSum(:,f,ll) = FPIdxSum(:,f,ll) + (noBindA(1:mCur,2,f) >= threshP(l,ll));
+                    else
+                        FPIdxCond(:,f,ll) = FPIdxCond(:,f,ll) & (noBindYh(1:mCur) ~= noBindY(1:mCur,f));
+                        FPIdxSum(:,f,ll) = FPIdxSum(:,f,ll) + (noBindYh(1:mCur) ~= noBindY(1:mCur,f));
+                    end
+
+                    %TNIdxCond(:,ll) = TNIdxCond(:,ll) & (noBindA(1:mCur,1) >= threshP(l,ll));
+                    %TNIdxCond(:,ll) = TNIdxCond(:,ll) & ((noBindYh(1:mCur) == noBindY(1:mCur)) & (noBindA(1:mCur,1) > threshP(l,ll)));
+                    %TNIdxCond(:,ll) = TNIdxCond(:,ll) & ( ((noBindYh(1:mCur) == noBindY(1:mCur)) & (noBindA(1:mCur,1) > threshP(l,ll))) | ((noBindYh(1:mCur) ~= noBindY(1:mCur)) & (noBindA(1:mCur,2) <= threshP(l,ll))) );
                 end
-
-                %TNIdxCond(:,ll) = TNIdxCond(:,ll) & (noBindA(1:mCur,1) >= threshP(l,ll));
-                %TNIdxCond(:,ll) = TNIdxCond(:,ll) & ((noBindYh(1:mCur) == noBindY(1:mCur)) & (noBindA(1:mCur,1) > threshP(l,ll)));
-                %TNIdxCond(:,ll) = TNIdxCond(:,ll) & ( ((noBindYh(1:mCur) == noBindY(1:mCur)) & (noBindA(1:mCur,1) > threshP(l,ll))) | ((noBindYh(1:mCur) ~= noBindY(1:mCur)) & (noBindA(1:mCur,2) <= threshP(l,ll))) );
-            end
 
             end
             
