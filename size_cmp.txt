@@ -316,6 +316,15 @@ Model 3.925021e+06 mb_size 3746315, max_epoch
 
 Accuracy 0.995784+-0.000000, Precision 0.729872+-0.000000, Recall 0.986838+-0.000000, Specificity 0.995885+-0.000000, F1 0.839123+-0.000000, TP 3599.000000+-0.000000, TN 322335.000000+-0.000000, FN 48.000000+-0.000000, FP 1332.000000+-0.000000, AUC 0.000000, TrTime 1.565167
 >> 
+
+Model .relu2dc50 mb_size 524288, max_epoch .120.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 6, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 6
+
+Accuracy 0.995879+-0.000000, Precision 0.734490+-0.000000, Recall 0.986838+-0.000000, Specificity 0.995980+-0.000000, F1 0.842167+-0.000000, TP 3599.000000+-0.000000, TN 322366.000000+-0.000000, FN 48.000000+-0.000000, FP 1301.000000+-0.000000, AUC 0.000000, TrTime 3.097529
+>> 
+
 Heterogeneous (Batch+Random+Cassandra) Ensemble Majority
 Model .relu2dc50 mb_size 524288, max_epoch .120.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
 
@@ -323,4 +332,127 @@ Model 3.925021e+06 mb_size 3746315, max_epoch
  ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 3, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 2
 
 Accuracy 0.994372+-0.000000, Precision 0.667347+-0.000000, Recall 0.986838+-0.000000, Specificity 0.994457+-0.000000, F1 0.796239+-0.000000, TP 3599.000000+-0.000000, TN 321873.000000+-0.000000, FN 48.000000+-0.000000, FP 1794.000000+-0.000000, AUC 0.000000, TrTime 1.549158
+>> 
+
+
+
+Random
+Model .lrrelufc2dc50 mb_size 262144, max_epoch .25.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.985152+-0.000000, Precision 0.427322+-0.000000, Recall 0.977790+-0.000000, Specificity 0.985235+-0.000000, F1 0.594730+-0.000000, TP 3566.000000+-0.000000, TN 318888.000000+-0.000000, FN 81.000000+-0.000000, FP 4779.000000+-0.000000, AUC 0.000000, TrTime 22906.122469
+>> 
+
+
+Batch
+Model .lrrelu2dc50 mb_size 262144, max_epoch .25.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.990813+-0.000000, Precision 0.548324+-0.000000, Recall 0.995613+-0.000000, Specificity 0.990759+-0.000000, F1 0.707177+-0.000000, TP 3631.000000+-0.000000, TN 320676.000000+-0.000000, FN 16.000000+-0.000000, FP 2991.000000+-0.000000, AUC 0.000000, TrTime 23838.412522
+>> 
+
+Model .lrrelu2dc50 mb_size 262144, max_epoch .50.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.993111+-0.000000, Precision 0.619219+-0.000000, Recall 0.991226+-0.000000, Specificity 0.993132+-0.000000, F1 0.762256+-0.000000, TP 3615.000000+-0.000000, TN 321444.000000+-0.000000, FN 32.000000+-0.000000, FP 2223.000000+-0.000000, AUC 0.000000, TrTime 2.370151
+>> 
+
+Model .lrrelu2dc50 mb_size 262144, max_epoch .70.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.992206+-0.000000, Precision 0.589048+-0.000000, Recall 0.993968+-0.000000, Specificity 0.992186+-0.000000, F1 0.739720+-0.000000, TP 3625.000000+-0.000000, TN 321138.000000+-0.000000, FN 22.000000+-0.000000, FP 2529.000000+-0.000000, AUC 0.000000, TrTime 7264.672467
+>> 
+
+Model .lrrelu2dc50 mb_size 262144, max_epoch .100.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.992863+-0.000000, Precision 0.610895+-0.000000, Recall 0.990129+-0.000000, Specificity 0.992894+-0.000000, F1 0.755597+-0.000000, TP 3611.000000+-0.000000, TN 321367.000000+-0.000000, FN 36.000000+-0.000000, FP 2300.000000+-0.000000, AUC 0.000000, TrTime 28273.340953
+>> 
+
+Model .lrrelu2dc50 mb_size 262144, max_epoch .120.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.993563+-0.000000, Precision 0.635898+-0.000000, Recall 0.987935+-0.000000, Specificity 0.993626+-0.000000, F1 0.773757+-0.000000, TP 3603.000000+-0.000000, TN 321604.000000+-0.000000, FN 44.000000+-0.000000, FP 2063.000000+-0.000000, AUC 0.000000, TrTime 15783.412196
+>> 
+
+Model .lrrelu2dc50 mb_size 262144, max_epoch .150.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.992170+-0.000000, Precision 0.587930+-0.000000, Recall 0.993693+-0.000000, Specificity 0.992152+-0.000000, F1 0.738763+-0.000000, TP 3624.000000+-0.000000, TN 321127.000000+-0.000000, FN 23.000000+-0.000000, FP 2540.000000+-0.000000, AUC 0.000000, TrTime 28520.743882
+>> 
+
+Model .lrrelu2dc50 mb_size 262144, max_epoch .170.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.992854+-0.000000, Precision 0.610138+-0.000000, Recall 0.993419+-0.000000, Specificity 0.992848+-0.000000, F1 0.755973+-0.000000, TP 3623.000000+-0.000000, TN 321352.000000+-0.000000, FN 24.000000+-0.000000, FP 2315.000000+-0.000000, AUC 0.000000, TrTime 19057.816145
+>> 
+
+Batch Ensemble all
+Model .lrrelu2dc50 mb_size 262144, max_epoch .25.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 7, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 7
+
+Accuracy 0.994571+-0.000000, Precision 0.673405+-0.000000, Recall 0.995613+-0.000000, Specificity 0.994559+-0.000000, F1 0.803407+-0.000000, TP 3631.000000+-0.000000, TN 321906.000000+-0.000000, FN 16.000000+-0.000000, FP 1761.000000+-0.000000, AUC 0.000000, TrTime 2.615860
+>> 
+
+
+
+Cassandra
+Model .lrrelu2dc50 mb_size 262144, max_epoch .25.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.993709+-0.000000, Precision 0.641331+-0.000000, Recall 0.987935+-0.000000, Specificity 0.993774+-0.000000, F1 0.777766+-0.000000, TP 3603.000000+-0.000000, TN 321652.000000+-0.000000, FN 44.000000+-0.000000, FP 2015.000000+-0.000000, AUC 0.000000, TrTime 36248.581377
+
+Model .lrrelu2dc50 mb_size 262144, max_epoch .50.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.993920+-0.000000, Precision 0.649199+-0.000000, Recall 0.988484+-0.000000, Specificity 0.993981+-0.000000, F1 0.783696+-0.000000, TP 3605.000000+-0.000000, TN 321719.000000+-0.000000, FN 42.000000+-0.000000, FP 1948.000000+-0.000000, AUC 0.000000, TrTime 28988.405087
+
+
+Model .lrrelu2dc50 mb_size 262144, max_epoch .70.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.993129+-0.000000, Precision 0.619938+-0.000000, Recall 0.990677+-0.000000, Specificity 0.993157+-0.000000, F1 0.762639+-0.000000, TP 3613.000000+-0.000000, TN 321452.000000+-0.000000, FN 34.000000+-0.000000, FP 2215.000000+-0.000000, AUC 0.000000, TrTime 72879.908870
+>>
+
+Model .lrrelu2dc50 mb_size 262144, max_epoch .100.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 1, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 0
+
+Accuracy 0.993355+-0.000000, Precision 0.627867+-0.000000, Recall 0.990951+-0.000000, Specificity 0.993382+-0.000000, F1 0.768691+-0.000000, TP 3614.000000+-0.000000, TN 321525.000000+-0.000000, FN 33.000000+-0.000000, FP 2142.000000+-0.000000, AUC 0.000000, TrTime 13376.080503
+>> 
+ 
+
+Cassandra Ensemble all
+Model .lrrelu2dc50 mb_size 262144, max_epoch .70.50.150 ResWindow 47, BaseWindow 47, TrainBindN 1968620, TrainNoBindN 3765130, BindScaleNo 3755243, NoBindScaleNo 3948076, ScaleInFiles 3920128.000000
+
+Model 3.925021e+06 mb_size 3746315, max_epoch 
+ ResWindow 0, BaseWindow 6, TrainBindN NNetTypes 1, NNets 3, NTrain 1000, NoBindPerc 0, NoBindThresh1 0.000000, NoBindTsRat 0, TestBindN 3647, TestNoBindN 323667 ThreshVal 3
+
+Accuracy 0.994394+-0.000000, Precision 0.667344+-0.000000, Recall 0.990677+-0.000000, Specificity 0.994436+-0.000000, F1 0.797484+-0.000000, TP 3613.000000+-0.000000, TN 321866.000000+-0.000000, FN 34.000000+-0.000000, FP 1801.000000+-0.000000, AUC 0.000000, TrTime 1.921261
 >> 

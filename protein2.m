@@ -12,7 +12,7 @@ addpath('~/Protein/');
 %    reset(gpuDevice(i));
 %end
 
-useDB = 0; %1;
+useDB = 1; %1;
 
 
 
@@ -73,7 +73,7 @@ folds = foldInFiles * floor((foldInFiles-1)/2);
 noBindPerc = 0; %95;
 
 nTrain = 1000; %1 or 1000(more)
-nNets = 3; %5 3 1;
+nNets = 1; %5 3 1;
 
 
 
@@ -93,19 +93,18 @@ ini_rate = 0.001;
 max_epoch = [floor(120), floor(50), floor(150)]; %* 20; %200
 
 
-%cNet = AnnClasNet2D(m_in, n_out, ini_rate, max_epoch);
-cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
+%cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = Relu1aClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = Relu1bClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = Relu3aClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = Relu3bClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = Relu4ClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 
-%cNet = SigClasNet2D(m_in, n_out, ini_rate, max_epoch);
-%cNet = TanhClasNet2D(m_in, n_out, ini_rate, max_epoch(3));
-%cNet = RbfClasNet2D(m_in, n_out, ini_rate, max_epoch);
-%cNet = TransClasNet2D(m_in, n_out, ini_rate, max_epoch);
-%cNet = KgClasNet2D(m_in, n_out, ini_rate, max_epoch(2));
+cNet = LrReLUNet2Cl(m_in, n_out, ini_rate, max_epoch(1), .5);
+
+%cNet = QLrReLUNet2Cl(m_in, n_out, ini_rate, max_epoch(1), .5);
+%cNet = LrReLUFCNet2Cl(m_in, n_out, ini_rate, max_epoch(1), .5);
+
 
 nNetTypes = 1; %3;
 cNetTypes = cell([nNetTypes, 1]);
@@ -119,6 +118,7 @@ cNetTypes{1} = cNet;
 %cNetTypes{2} = cNet3;
 %cNetTypes{3} = cNet3;
 
+%Ensemble voting
 if nNets*nNetTypes > 1
     threshVal = nNets*nNetTypes; %floor(nNets*nNetTypes/2) + 1; %<-all majority->
 else
