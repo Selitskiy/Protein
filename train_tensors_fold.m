@@ -6,7 +6,7 @@ dataTrIdxFN = strcat(dataIdxDir,'/',dataTrIdxFile);
 trIdxM = readmatrix(dataTrIdxFN, FileType='text', OutputType='string', Delimiter=' ');
 [n, ~] = size(trIdxM);
 
-randFold = 0; %1 0;
+randFold = 1; %1 0;
 dbLoaded = 1;
 dbBuff = 200000;
 epochsIni = -1;

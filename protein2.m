@@ -12,7 +12,7 @@ addpath('~/Protein/');
 %    reset(gpuDevice(i));
 %end
 
-useDB = 1; %1;
+useDB = 0; %1;
 
 
 
@@ -73,7 +73,7 @@ folds = foldInFiles * floor((foldInFiles-1)/2);
 noBindPerc = 0; %95;
 
 nTrain = 1000; %1 or 1000(more)
-nNets = 1; %5 3 1;
+nNets = 5; %5 3 1;
 
 
 
