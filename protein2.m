@@ -15,6 +15,23 @@ addpath('~/Protein/');
 useDB = 0; %1;
 
 
+% test
+%b = 2;
+%p = 2;
+%q = 3;
+%n = 4;
+%X = repmat((1:p)',[1,b]);
+%X(:,b) = 2 * X(:,b);
+%A = ones([q,p,n]);
+%A(q,:,1) = 0;
+%A(2,:,n) = 0;
+%f = ones([q,1,n,b]);
+%B = ones([1,q,n]);
+%
+%f(:,1,:,:) = tensorprod(A, X, 2, 1);
+%y = pagemtimes(B,f);
+%z = sin(y);
+
 
 %% General config
 
@@ -100,8 +117,9 @@ max_epoch = [floor(120), floor(50), floor(150)]; %* 20; %200
 %cNet = Relu3bClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = Relu4ClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
 
-cNet = LrReLUNet2Cl(m_in, n_out, ini_rate, max_epoch(1), .5);
+%cNet = LrReLUNet2Cl(m_in, n_out, ini_rate, max_epoch(1), .5);
 
+cNet = LrReLUQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = QLrReLUNet2Cl(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = LrReLUFCNet2Cl(m_in, n_out, ini_rate, max_epoch(1), .5);
 
