@@ -450,9 +450,9 @@ for j = 1:nNetTypes
     cNet.mb_size = 2^floor(log2(mWhole)-5); %lrrelu
     %cNet.mb_size = 2^floor(log2(mWhole)-15);
 
-    %Number of retrains on Big Data (not fitting into memory
+    %Number of retrains on Big Data (not fitting into memory)
     if nTrain ~= 1
-        epochsTarget = 1;
+        epochsTarget = 10; %1
         if foldInFiles ~= 1
             nReTrain = floor(cNet.max_epoch/(foldInFiles-1)/epochsTarget);
         else

@@ -14,9 +14,13 @@ classdef LrReLUQPLayers2Cl
             layers = [
                 featureInputLayer(net.m_in)
 
-                LrReLUQPLayer("fiQP_LrReLU", net.m_in, net.k_hid2, net.n_out, 1)
+                QExpansionLayer("QPage_Ext", net.k_hid2, net.n_out)
 
-                LrReLUQLayer("FiQ_LrReLU", net.k_hid2, net.n_out, 1)
+                LrReLULQPLayer("phiQP_LinLrReLU", net.m_in, net.k_hid2, net.n_out, 1)
+
+                QSumLayer("SumP_phiQP", net.m_in, net.k_hid2, net.n_out)
+
+                %LrReLUQLayer("FiQ_LrReLU", net.k_hid2, net.n_out, 1)
 
                 softmaxLayer
                 classificationLayer
