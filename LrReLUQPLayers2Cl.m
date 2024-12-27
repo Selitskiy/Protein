@@ -18,9 +18,13 @@ classdef LrReLUQPLayers2Cl
 
                 LrReLULQPLayer("phiQP_LinLrReLU", net.m_in, net.k_hid2, net.n_out, 1)
 
-                QSumLayer("SumP_phiQP", net.m_in, net.k_hid2, net.n_out)
+                PSumLayer("SumP_phiQP", net.m_in, net.k_hid2, net.n_out)
 
                 %LrReLUQLayer("FiQ_LrReLU", net.k_hid2, net.n_out, 1)
+
+                LrReLULQPLayer("PhiQP_LinLrReLU", net.k_hid2, 1, net.n_out, 1)
+
+                QSumLayer("SumP_PhiQP", net.k_hid2, 1, net.n_out)
 
                 softmaxLayer
                 classificationLayer
