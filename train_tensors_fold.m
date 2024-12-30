@@ -448,11 +448,12 @@ for j = 1:nNetTypes
     mWhole = mAllYes + mAllNo(1)*2;
     %cNet.mb_size = 2^floor(log2(mWhole)-4);
     %cNet.mb_size = 2^floor(log2(mWhole)-5); %lrrelu
-    cNet.mb_size = 2^floor(log2(mWhole)-17);
+    cNet.mb_size = 2^floor(log2(mWhole)-6); %lrrelulqp
+    %cNet.mb_size = 2^floor(log2(mWhole)-17);
 
     %Number of retrains on Big Data (not fitting into memory)
     if nTrain ~= 1
-        epochsTarget = 10; %1
+        epochsTarget = 1; %1
         if foldInFiles ~= 1
             nReTrain = floor(cNet.max_epoch/(foldInFiles-1)/epochsTarget);
         else
@@ -519,7 +520,7 @@ for j = 1:nNetTypes
 
                         mWhole = mAllYes + mAllNo(k) + mAllNo(m);
 
-                        trMX = zeros([mWhole, m_in]);
+                        trMX = zeros([mWhole, m_in],'single');
                         trMY = categorical(zeros([mWhole, 1]));
 
 
@@ -541,7 +542,7 @@ for j = 1:nNetTypes
 
                             trNoBindY = categorical(zeros([mAllNo(k), 1]));
 
-                            trMX(mAllYes+1:mAllYes+mAllNo(k),:) = trNoBindM;
+                            trMX(mAllYes+1:mAllYes+mAllNo(k),:) = single(trNoBindM);
                             trMY(mAllYes+1:mAllYes+mAllNo(k),:) = trNoBindY;
 
                             clear("trNoBindM");
@@ -748,7 +749,7 @@ for j = 1:nNetTypes
                         end
 
 
-                        trMX = zeros([mWhole, m_in]);
+                        trMX = zeros([mWhole, m_in],'single');
                         trMY = categorical(zeros([mWhole, 1]));
 
 

@@ -16,13 +16,15 @@ classdef LrReLUQPLayers2Cl
 
                 QExpansionLayer("QPage_Ext", net.k_hid2, net.n_out)
 
-                LrReLULQPLayer("phiQP_LinLrReLU", net.m_in, net.k_hid2, net.n_out, 1)
+                %RBFQPLayer("phiQP_RBF", net.m_in, net.k_hid2, net.n_out)
+                SinQPLayer("phiQP_Sin", net.m_in, net.k_hid2, net.n_out)
+                %LrReLULQPLayer("phiQP_LinLrReLU", net.m_in, net.k_hid2, net.n_out, 1)
 
                 PSumLayer("SumP_phiQP", net.m_in, net.k_hid2, net.n_out)
 
-                %LrReLUQLayer("FiQ_LrReLU", net.k_hid2, net.n_out, 1)
-
-                LrReLULQPLayer("PhiQP_LinLrReLU", net.k_hid2, 1, net.n_out, 1)
+                %RBFQPLayer("PhiQP_RBF", net.k_hid2, 1, net.n_out)
+                SinQPLayer("PhiQP_Sin", net.k_hid2, 1, net.n_out)
+                %LrReLULQPLayer("PhiQP_LinLrReLU", net.k_hid2, 1, net.n_out, 1)
 
                 QSumLayer("SumP_PhiQP", net.k_hid2, 1, net.n_out)
 
