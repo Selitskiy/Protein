@@ -15,9 +15,12 @@ classdef LrReLULQPLayers2Cl
                 featureInputLayer(net.m_in)
                 %LrReLUSinLayer("In", net.m_in, pi)
 
-                fullyConnectedLayer(net.k_hid2*net.n_out, 'Name', 'Sum phi QP')
-                LrReLULayer("Phi Q", net.k_hid2*net.n_out, 1)
-                %LrReLUSinLayer("Phi Q", net.k_hid2*net.n_out, 0)
+                fullyConnectedLayer(net.k_hid2*net.n_out, 'Name', "Sum phi QP")
+                LrReLULayer("LrReLU Phi Q", net.k_hid2*net.n_out, 1)
+
+                %RBFQLayer("Sin Phi Q", net.k_hid2*net.n_out)
+                %SinQLayer("Sin Phi Q", net.k_hid2*net.n_out)
+                %additionLayer(3, 'Name', "Furier Add")
 
                 QPartitionLayer("ProductPage_Part", net.k_hid2, net.n_out)
 
@@ -28,6 +31,22 @@ classdef LrReLULQPLayers2Cl
             ];
 
             net.lGraph = layerGraph(layers);
+
+
+            %sLayers = [
+            %    SinQLayer("Sin Phi Q2", net.k_hid2*net.n_out)
+            %];
+            %net.lGraph = addLayers(net.lGraph, sLayers);
+            %net.lGraph = connectLayers(net.lGraph, "Sum phi QP", "Sin Phi Q2");
+            %net.lGraph = connectLayers(net.lGraph,  "Sin Phi Q2", "Furier Add/in2");
+
+            %sLayers2 = [
+            %    SinQLayer("Sin Phi Q3", net.k_hid2*net.n_out)
+            %];
+            %net.lGraph = addLayers(net.lGraph, sLayers2);
+            %net.lGraph = connectLayers(net.lGraph, "Sum phi QP", "Sin Phi Q3");
+            %net.lGraph = connectLayers(net.lGraph,  "Sin Phi Q3", "Furier Add/in3");
+
 
 
             net.options = trainingOptions('adam', ...

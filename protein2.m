@@ -107,7 +107,7 @@ dataTrIdxFile = 'train.lst';
 
 %%
 ini_rate = 0.001; %0.001
-max_epoch = [floor(120), floor(50), floor(150)]; %* 20; %200
+max_epoch = [floor(25), floor(50), floor(150)]; %* 20; %200
 
 
 %cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
@@ -121,6 +121,8 @@ max_epoch = [floor(120), floor(50), floor(150)]; %* 20; %200
 
 cNet = LrReLULQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
 %cNet = LrReLUQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
+
+
 %cNet = QLrReLUNet2Cl(m_in, n_out, ini_rate, max_epoch(1), .5);
 %cNet = LrReLUFCNet2Cl(m_in, n_out, ini_rate, max_epoch(1), .5);
 

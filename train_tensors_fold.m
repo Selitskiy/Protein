@@ -448,7 +448,8 @@ for j = 1:nNetTypes
     mWhole = mAllYes + mAllNo(1)*2;
     %cNet.mb_size = 2^floor(log2(mWhole)-4);
     %cNet.mb_size = 2^floor(log2(mWhole)-5); %lrrelu
-    cNet.mb_size = 2^floor(log2(mWhole)-6); %lrrelulqp
+    %cNet.mb_size = 2^floor(log2(mWhole)-6); %lrrelulqp layers
+    cNet.mb_size = 2^floor(log2(mWhole)-7); %sin q
     %cNet.mb_size = 2^floor(log2(mWhole)-17);
 
     %Number of retrains on Big Data (not fitting into memory)
