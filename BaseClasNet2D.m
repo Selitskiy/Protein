@@ -24,19 +24,13 @@ classdef BaseClasNet2D
     end
 
     methods
-        function net = BaseClasNet2D(m_in, n_out, ini_rate, max_epoch)
+        function net = BaseClasNet2D(m_in, n_out, ini_rate, max_epoch, mult)
 
-            %net.x_off = x_off;
-            %net.x_in = x_in;
-            %net.t_in = t_in;
             net.m_in = m_in;
 
-            %net.y_off = y_off;
-            %net.y_out = y_out;
-            %net.t_out = t_out;
             net.n_out = n_out;
 
-            mult = 1;
+            %mult = 1;
             net.k_hid1 = floor(mult * (net.m_in + 1));
             net.k_hid2 = floor(mult * (2*net.m_in + 1));
             net.ini_rate = ini_rate;

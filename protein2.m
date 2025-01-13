@@ -12,7 +12,7 @@ addpath('~/Protein/');
 %    reset(gpuDevice(i));
 %end
 
-useDB = 0; %1;
+useDB = 0; %1; CHANGE
 
 
 % test
@@ -90,7 +90,7 @@ folds = foldInFiles * floor((foldInFiles-1)/2);
 noBindPerc = 0; %95;
 
 nTrain = 1000; %1 or 1000(more)
-nNets = 5; %5 3 1;
+nNets = 1; %5 3 1; CHANGE
 
 
 
@@ -107,7 +107,7 @@ dataTrIdxFile = 'train.lst';
 
 %%
 ini_rate = 0.001; %0.001
-max_epoch = [floor(25), floor(50), floor(150)]; %* 20; %200
+max_epoch = [floor(75), floor(50), floor(150)]; %* 20; %200 CHANGE
 
 
 %cNet = ReluClasNet2D(m_in, n_out, ini_rate, max_epoch(1), .5);
@@ -120,6 +120,10 @@ max_epoch = [floor(25), floor(50), floor(150)]; %* 20; %200
 %cNet = LrReLUNet2Cl(m_in, n_out, ini_rate, max_epoch(1), .5);
 
 cNet = LrReLULQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
+%cNet = LrReLUSQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
+%cNet = LrReLU3SQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
+%cNet = LrReLURQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
+
 %cNet = LrReLUQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
 
 

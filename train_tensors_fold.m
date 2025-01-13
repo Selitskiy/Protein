@@ -6,7 +6,7 @@ dataTrIdxFN = strcat(dataIdxDir,'/',dataTrIdxFile);
 trIdxM = readmatrix(dataTrIdxFN, FileType='text', OutputType='string', Delimiter=' ');
 [n, ~] = size(trIdxM);
 
-randFold = 1; %1 0;
+randFold = 1; %1 0; CHANGE
 dbLoaded = 1;
 dbBuff = 200000;
 epochsIni = -1;
@@ -447,7 +447,7 @@ for j = 1:nNetTypes
 
     mWhole = mAllYes + mAllNo(1)*2;
     %cNet.mb_size = 2^floor(log2(mWhole)-4);
-    %cNet.mb_size = 2^floor(log2(mWhole)-5); %lrrelu
+    %cNet.mb_size = 2^floor(log2(mWhole)-5); %lrrelu CHANGE
     %cNet.mb_size = 2^floor(log2(mWhole)-6); %lrrelulqp layers
     cNet.mb_size = 2^floor(log2(mWhole)-7); %sin q
     %cNet.mb_size = 2^floor(log2(mWhole)-17);
