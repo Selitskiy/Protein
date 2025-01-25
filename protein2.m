@@ -119,10 +119,14 @@ max_epoch = [floor(75), floor(50), floor(150)]; %* 20; %200 CHANGE
 
 %cNet = LrReLUNet2Cl(m_in, n_out, ini_rate, max_epoch(1), .5);
 
-cNet = LrReLULQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
+%cNet = LrReLULQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
 %cNet = LrReLUSQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
 %cNet = LrReLU3SQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
 %cNet = LrReLURQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
+
+cNet = LnPLrReLUQNACNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
+%cNet = LnP3SinQNACNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
+%cNet = LnPRbfQNACNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
 
 %cNet = LrReLUQPNet2Cl(m_in, n_out, ini_rate, max_epoch(1), 1);
 
